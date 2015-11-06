@@ -1,13 +1,14 @@
 package ar.edu.tadp.dragonball
 
-import org.scalatest.{Matchers, FlatSpec}
-import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.DragonBall._
+import ar.edu.tadp.dragonball.Movimientos._
+import org.scalatest.{FlatSpec, Matchers}
 
 class MovimientosSpec extends FlatSpec with Matchers {
 
   val goku: Guerrero = Guerrero("Goku", List(SemillasDelErmitanio), 9500, 20000, List(dejarseFajar, cargarKi, UsarItem(SemillasDelErmitanio)), Saiyajin, Normal)
   val vegeta: Guerrero = Guerrero("Vegeta", List(FotoDeLaLuna), 8000, 9000, List(dejarseFajar, convertirseEnMono, convertirseEnSuperSaiyajin), Saiyajin, Normal, true)
+  val gohan: Guerrero = Guerrero("Gohan", List(FotoDeLaLuna), 7900, 9000, List(dejarseFajar, cargarKi), Saiyajin, Normal, true)
 
   "Goku" should "dejarse fajar por Vegeta sin modificar nada" in {
     val (atacante: Guerrero, defensor: Guerrero) = goku.realizarMovimiento(vegeta, dejarseFajar)
@@ -45,6 +46,15 @@ class MovimientosSpec extends FlatSpec with Matchers {
     atacante.nivel should be (1)
     atacante.energia should be (8000)
     atacante.energiaMaxima should be (45000)
+  }
+
+  "CargarKi" should "ser mas efectivo que dejarse fajar con el criterio de energia del atacante" in{
+    val criterio = new CriterioEnergia()
+
+    val movimiento = gohan.movimientoMasEfectivoContra(vegeta)(criterio)
+
+    movimiento.hashCode() should be (cargarKi.hashCode())
 
   }
 }
+

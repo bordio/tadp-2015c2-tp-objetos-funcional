@@ -11,6 +11,20 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
     if (movimientos.contains(movimiento)) movimiento(this, oponente) else (this, oponente)
   }
 
+  def movimientoMasEfectivoContra(oponente: Guerrero) = {
+    (criterio: Criterio) => {
+      movimientos.maxBy(mov =>
+        criterio.cuantificar(this.realizarMovimiento(oponente, mov)._1, this.realizarMovimiento(oponente, mov)._2))
+    }
+  }
+
+  def pelearUnRound(movimiento: Movimiento) = {
+    (oponente: Guerrero) => {
+      val (atacante, defensor) = this.realizarMovimiento(oponente, movimiento)
+      defensor.realizarMovimiento(atacante, defensor.movimientoMasEfectivoContra(this)(new CriterioEnergia))
+    }
+  }
+
   def aumentarRoundsDejandoseFajar() =
     copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
 
