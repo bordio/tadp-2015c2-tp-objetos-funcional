@@ -56,5 +56,6 @@ class MovimientosSpec extends FlatSpec with Matchers {
     movimiento.hashCode() should be (cargarKi.hashCode())
 
   }
+
 }
 

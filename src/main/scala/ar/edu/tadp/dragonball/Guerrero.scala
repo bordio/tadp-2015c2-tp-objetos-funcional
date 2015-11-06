@@ -25,6 +25,24 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
     }
   }
 
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int) = {
+    (criterio: Criterio) => {
+      var movimientoActual = movimientoMasEfectivoContra(oponente)(criterio)
+      var planDeAtaque = PlanDeAtaque(List(movimientoActual))
+      var atacanteActual = this
+      var oponenteActual = oponente
+
+      for (_ <- 1 to cantidadDeRounds) {
+        val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteActual.pelearUnRound(movimientoActual)(oponenteActual)
+        atacanteActual = atacanteProximo
+        oponenteActual = oponenteProximo
+        movimientoActual = atacanteActual.movimientoMasEfectivoContra(oponenteActual)(criterio)
+        planDeAtaque = planDeAtaque.agregarMovimiento(movimientoActual)
+      }
+      planDeAtaque
+    }
+  }
+
   def aumentarRoundsDejandoseFajar() =
     copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
 

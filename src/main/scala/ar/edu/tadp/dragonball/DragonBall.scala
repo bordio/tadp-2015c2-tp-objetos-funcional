@@ -1,5 +1,7 @@
 package ar.edu.tadp.dragonball
 
+import ar.edu.tadp.dragonball.Movimientos.Movimiento
+
 
 object DragonBall {
 
@@ -57,5 +59,10 @@ object DragonBall {
   case object KO extends Estado
 
   case object Muerto extends Estado
+
+  case class PlanDeAtaque(movimientos: List[Movimiento] = List()) {
+    def agregarMovimiento(movimiento: Movimiento) =
+      copy(movimientos = movimientos :+ movimiento)
+  }
 
 }
