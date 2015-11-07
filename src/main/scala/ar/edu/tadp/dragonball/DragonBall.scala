@@ -36,7 +36,7 @@ object DragonBall {
 
   trait Especie
 
-  case object Saiyajin extends Especie
+  case class Saiyajin(nivel: Int = 0, tieneCola: Boolean = true) extends Especie
 
   case object Humano extends Especie
 
@@ -44,7 +44,13 @@ object DragonBall {
 
   case object Namekusein extends Especie
 
-  case object Monstruo extends Especie
+  class TipoDigestion {
+
+    def movimientosAlComerA(guerrero: Guerrero, movimientosActuales: List[Movimiento]) =
+      movimientosActuales ++ guerrero.movimientos
+  }
+
+  case class Monstruo(tipoDigestion: TipoDigestion) extends Especie
 
   case object Indefinido extends Especie
 

@@ -6,9 +6,9 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class MovimientosSpec extends FlatSpec with Matchers {
 
-  val goku: Guerrero = Guerrero("Goku", List(SemillasDelErmitanio), 9500, 20000, List(dejarseFajar, cargarKi, UsarItem(SemillasDelErmitanio)), Saiyajin, Normal)
-  val vegeta: Guerrero = Guerrero("Vegeta", List(FotoDeLaLuna), 8000, 9000, List(dejarseFajar, convertirseEnMono, convertirseEnSuperSaiyajin), Saiyajin, Normal, true)
-  val gohan: Guerrero = Guerrero("Gohan", List(FotoDeLaLuna), 7900, 9000, List(dejarseFajar, cargarKi), Saiyajin, Normal, true)
+  val goku: Guerrero = Guerrero("Goku", List(SemillasDelErmitanio), 9500, 20000, List(dejarseFajar, cargarKi, UsarItem(SemillasDelErmitanio)), Saiyajin(), Normal)
+  val vegeta: Guerrero = Guerrero("Vegeta", List(FotoDeLaLuna), 8000, 9000, List(dejarseFajar, convertirseEnMono, convertirseEnSuperSaiyajin), Saiyajin(), Normal)
+  val gohan: Guerrero = Guerrero("Gohan", List(FotoDeLaLuna), 7900, 9000, List(dejarseFajar, cargarKi), Saiyajin(), Normal)
 
   "Goku" should "dejarse fajar por Vegeta sin modificar nada" in {
     val (atacante: Guerrero, defensor: Guerrero) = goku.realizarMovimiento(vegeta, dejarseFajar)
@@ -43,7 +43,6 @@ class MovimientosSpec extends FlatSpec with Matchers {
     val (atacante: Guerrero, defensor: Guerrero) = vegeta.realizarMovimiento(goku, convertirseEnSuperSaiyajin)
 
     atacante.estado should be (SuperSaiyajin)
-    atacante.nivel should be (1)
     atacante.energia should be (8000)
     atacante.energiaMaxima should be (45000)
   }

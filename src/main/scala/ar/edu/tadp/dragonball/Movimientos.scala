@@ -7,18 +7,14 @@ object Movimientos {
 
   type Movimiento = (Guerrero, Guerrero) => (Guerrero, Guerrero)
 
-  class TipoDigestion {
 
-    def movimientosAlComerA(guerrero: Guerrero, movimientosActuales: List[Movimiento]) =
-      movimientosActuales ++ guerrero.movimientos
-  }
 
   val dejarseFajar = (atacante: Guerrero, oponente: Guerrero) => (atacante.aumentarRoundsDejandoseFajar(), oponente)
 
   val cargarKi = (atacante: Guerrero, oponente: Guerrero) => {
     (atacante.especie, atacante.estado) match {
-      case (Saiyajin, SuperSaiyajin) =>
-        (atacante.aumentarEnergia(150 * atacante.nivel), oponente)
+      case (Saiyajin(nivel, _), SuperSaiyajin) =>
+        (atacante.aumentarEnergia(150 * nivel), oponente)
       case (Androide, _) =>
         (atacante, oponente)
       case (_) =>
@@ -34,10 +30,10 @@ object Movimientos {
           case (ArmaRoma, Androide, _) => (atacante, oponente)
           case (ArmaRoma, _, _) => (atacante, oponente.quedarKOSiEnergiaMenorA(300))
 
-          case (ArmaFilosa, Saiyajin, MonoGigante) =>
-            (atacante, oponente.perderCola().cambiarEnergiaA(1).cambiarEstadoA(KO))
-          case (ArmaFilosa, Saiyajin, _) if oponente.tieneCola =>
-            (atacante, oponente.perderCola().cambiarEnergiaA(1))
+          case (ArmaFilosa, Saiyajin(nivel,_), MonoGigante) =>
+            (atacante, oponente.cambiarEspecieA(Saiyajin(nivel, tieneCola = false)).cambiarEnergiaA(1).cambiarEstadoA(KO))
+          case (ArmaFilosa, Saiyajin(nivel, tieneCola), _) if tieneCola =>
+            (atacante, oponente.cambiarEspecieA(Saiyajin(nivel, tieneCola = false)).cambiarEnergiaA(1))
           case (ArmaFilosa, _, _) =>
             (atacante, oponente.reducirEnergia(atacante.energia / 100))
 
@@ -58,8 +54,8 @@ object Movimientos {
 
   val comerseAlOponente = (atacante: Guerrero, oponente: Guerrero) => {
     atacante.especie match {
-      case Monstruo if oponente.energia < atacante.energia =>
-        (atacante.comerseA(oponente), oponente.cambiarEstadoA(Muerto))
+      case Monstruo(tipoDigestion) if oponente.energia < atacante.energia =>
+        (atacante.comerseA(oponente, tipoDigestion), oponente.cambiarEstadoA(Muerto))
       case _ =>
         //atacante.pasarVerguenza()
         (atacante, oponente)
@@ -68,7 +64,7 @@ object Movimientos {
 
   val convertirseEnMono = (atacante: Guerrero, oponente: Guerrero) => {
     atacante.especie match {
-      case Saiyajin if atacante.tieneCola && atacante.tieneFotoDeLuna() =>
+      case Saiyajin(_, tieneCola) if tieneCola && atacante.tieneFotoDeLuna() =>
         (atacante.cambiarEstadoA(MonoGigante).recuperarEnergiaMaxima().multiplicarEnergiaMaximaPor(3), oponente)
       case _ =>
         (atacante, oponente)
@@ -77,8 +73,8 @@ object Movimientos {
 
   val convertirseEnSuperSaiyajin = (atacante: Guerrero, oponente: Guerrero) => {
     atacante.especie match {
-      case Saiyajin if atacante.puedeSubirDeNivel() =>
-        (atacante.cambiarEstadoA(SuperSaiyajin).multiplicarEnergiaMaximaPor(5).subirNivel(), oponente)
+      case Saiyajin(nivel, tieneCola) if atacante.puedeSubirDeNivel() =>
+        (atacante.cambiarEstadoA(SuperSaiyajin).multiplicarEnergiaMaximaPor(5).cambiarEspecieA(Saiyajin(nivel + 1, tieneCola)), oponente)
       case _ =>
         (atacante, oponente)
     }
@@ -88,15 +84,15 @@ object Movimientos {
     def apply(atacante: Guerrero, oponente: Guerrero) = {
       (atacante.especie, amigo.especie) match {
         case (Humano, Humano) |
-             (Humano, Saiyajin) |
+             (Humano, Saiyajin(_,_)) |
              (Humano, Namekusein) |
-             (Saiyajin, Humano) |
-             (Saiyajin, Saiyajin) |
-             (Saiyajin, Namekusein) |
+             (Saiyajin(_,_), Humano) |
+             (Saiyajin(_,_), Saiyajin(_,_)) |
+             (Saiyajin(_,_), Namekusein) |
              (Namekusein, Humano) |
-             (Namekusein, Saiyajin) |
+             (Namekusein, Saiyajin(_,_)) |
              (Namekusein, Namekusein) =>
-          (atacante.aumentarEnergia(amigo.energia).aumentarEnergiaMaxima(amigo.energiaMaxima).eliminarEspecie(), oponente)
+          (atacante.aumentarEnergia(amigo.energia).aumentarEnergiaMaxima(amigo.energiaMaxima).cambiarEspecieA(Indefinido), oponente)
         case (_) =>
           (atacante, oponente)
       }
@@ -106,7 +102,7 @@ object Movimientos {
   case class Magia(estado: Estado, objetivo: Guerrero) extends Movimiento {
     def apply(atacante: Guerrero, oponente: Guerrero) = {
       atacante.especie match {
-        case Namekusein | Monstruo | _ if atacante.tieneLas7Esferas() =>
+        case Namekusein | Monstruo(_) | _ if atacante.tieneLas7Esferas() =>
           if (objetivo == atacante) {
             (objetivo.cambiarEstadoA(estado), oponente)
           } else if (objetivo == oponente) {
@@ -135,7 +131,7 @@ object Movimientos {
 
   val explotar = (atacante: Guerrero, oponente: Guerrero) => {
     (atacante.especie, oponente.especie) match {
-      case (Monstruo, Namekusein) =>
+      case (Monstruo(_), Namekusein) =>
         var valorAReducir = 2 * atacante.energia
         if (valorAReducir >= oponente.energia) {
           valorAReducir = oponente.energia - 1
@@ -147,7 +143,7 @@ object Movimientos {
           valorAReducir = oponente.energia - 1
         }
         (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(valorAReducir))
-      case (Monstruo, _) =>
+      case (Monstruo(_), _) =>
         (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(2 * atacante.energia))
       case (Androide, _) =>
         (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(3 * atacante.energia))
@@ -159,7 +155,7 @@ object Movimientos {
   case class onda(energiaRequerida: Int) extends Movimiento {
     def apply(atacante: Guerrero, oponente: Guerrero) = {
       oponente.especie match {
-        case Monstruo if atacante.energia > energiaRequerida =>
+        case Monstruo(_) if atacante.energia > energiaRequerida =>
           (atacante.reducirEnergia(energiaRequerida), oponente.reducirEnergia(energiaRequerida / 2))
         case Androide if atacante.energia > energiaRequerida =>
           (atacante.reducirEnergia(energiaRequerida), oponente.aumentarEnergia(energiaRequerida))

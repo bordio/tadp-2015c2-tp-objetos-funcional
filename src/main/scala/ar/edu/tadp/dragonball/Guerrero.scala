@@ -3,9 +3,14 @@ package ar.edu.tadp.dragonball
 import ar.edu.tadp.dragonball.DragonBall._
 import ar.edu.tadp.dragonball.Movimientos._
 
-case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energiaMaxima: Int, movimientos: List[Movimiento], especie: Especie, estado: Estado, tieneCola: Boolean = false, roundsDejandoseFajar: Int = 0, nivel: Int = 0) {
-
-  val tipoDigestion = new TipoDigestion
+case class Guerrero(nombre: String,
+                    inventario: List[Item],
+                    energia: Int,
+                    energiaMaxima: Int,
+                    movimientos: List[Movimiento],
+                    especie: Especie,
+                    estado: Estado,
+                    roundsDejandoseFajar: Int = 0) {
 
   def realizarMovimiento(oponente: Guerrero, movimiento: Movimiento) = {
     if (movimientos.contains(movimiento)) movimiento(this, oponente) else (this, oponente)
@@ -85,16 +90,16 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
     }
   }
 
-  def perderCola() =
-    copy(tieneCola = false)
-
   def cambiarEnergiaA(cantidad: Int) =
     copy(energia = cantidad)
 
   def cambiarEstadoA(unEstado: Estado) = {
     val guerrero = copy(estado = unEstado)
     if (estado == SuperSaiyajin && unEstado != SuperSaiyajin) {
-      guerrero.copy(nivel = 0)
+      guerrero.especie match {
+        case Saiyajin(_, tieneCola) =>
+          guerrero.cambiarEspecieA(Saiyajin(0, tieneCola))
+      }
     } else {
       guerrero
     }
@@ -123,7 +128,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
   def eliminarItem(item: Item) =
     copy(inventario = inventario.diff(List(item)))
 
-  def comerseA(oponente: Guerrero) =
+  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion) =
     copy(movimientos = tipoDigestion.movimientosAlComerA(oponente, movimientos))
 
   def tieneFotoDeLuna() =
@@ -132,11 +137,8 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
   def puedeSubirDeNivel() =
     energia >= energiaMaxima / 2
 
-  def subirNivel() =
-    copy(nivel = nivel + 1)
-
-  def eliminarEspecie() =
-    copy(especie = Indefinido)
+  def cambiarEspecieA(unaEspecie: Especie) =
+    copy(especie = unaEspecie)
 
   def tieneLas7Esferas() =
     inventario.contains(Esfera1Estrella) &&
