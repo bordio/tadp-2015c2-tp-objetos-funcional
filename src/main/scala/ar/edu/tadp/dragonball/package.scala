@@ -1,13 +1,89 @@
-package ar.edu.tadp.dragonball
+package ar.edu.tadp
 
-import ar.edu.tadp.dragonball.DragonBall._
+package object dragonball {
 
 
-object Movimientos {
+
+  /* ITEMS */
+  trait Item
+
+  case object ArmaFilosa extends Item
+
+  case object ArmaRoma extends Item
+
+  case object ArmaDeFuego extends Item
+
+  case object SemillasDelErmitanio extends Item
+
+  case class Municion(tipo: Item) extends Item
+
+  case object FotoDeLaLuna extends Item
+
+  case class Esfera(estrellas: Int) extends Item
+
+
+
+  /* ESPECIES */
+  trait Especie
+
+  case class Saiyajin(nivel: Int = 0, tieneCola: Boolean = true) extends Especie
+
+  case object Humano extends Especie
+
+  case object Androide extends Especie
+
+  case object Namekusein extends Especie
+
+  class TipoDigestion {
+
+    def movimientosAlComerA(guerrero: Guerrero, movimientosActuales: List[Movimiento]) =
+      movimientosActuales ++ guerrero.movimientos
+  }
+
+  case class Monstruo(tipoDigestion: TipoDigestion) extends Especie
+
+  case object Indefinido extends Especie
+
+
+
+  /* ESTADOS */
+
+  trait Estado
+
+  case object SuperSaiyajin extends Estado
+
+  case object MonoGigante extends Estado
+
+  case object Normal extends Estado
+
+  case object KO extends Estado
+
+  case object Muerto extends Estado
+
+
+
+  /* PLAN DE ATAQUE */
+
+  case class PlanDeAtaque(movimientos: List[Movimiento] = List()) {
+    def agregarMovimiento(movimiento: Movimiento) =
+      copy(movimientos = movimientos :+ movimiento)
+  }
+
+
+
+  /* RESULTADOS DE PELEA */
+
+  trait ResultadoPelea
+
+  case class Ganador(ganador: Guerrero) extends ResultadoPelea
+
+  case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea
+
+
+
+  /* MOVIMIENTOS */
 
   type Movimiento = (Guerrero, Guerrero) => (Guerrero, Guerrero)
-
-
 
   val dejarseFajar = (atacante: Guerrero, oponente: Guerrero) => (atacante.aumentarRoundsDejandoseFajar(), oponente)
 
@@ -30,7 +106,7 @@ object Movimientos {
           case (ArmaRoma, Androide, _) => (atacante, oponente)
           case (ArmaRoma, _, _) => (atacante, oponente.quedarKOSiEnergiaMenorA(300))
 
-          case (ArmaFilosa, Saiyajin(nivel,_), MonoGigante) =>
+          case (ArmaFilosa, Saiyajin(nivel, _), MonoGigante) =>
             (atacante, oponente.cambiarEspecieA(Saiyajin(nivel, tieneCola = false)).cambiarEnergiaA(1).cambiarEstadoA(KO))
           case (ArmaFilosa, Saiyajin(nivel, tieneCola), _) if tieneCola =>
             (atacante, oponente.cambiarEspecieA(Saiyajin(nivel, tieneCola = false)).cambiarEnergiaA(1))
@@ -84,13 +160,13 @@ object Movimientos {
     def apply(atacante: Guerrero, oponente: Guerrero) = {
       (atacante.especie, amigo.especie) match {
         case (Humano, Humano) |
-             (Humano, Saiyajin(_,_)) |
+             (Humano, Saiyajin(_, _)) |
              (Humano, Namekusein) |
-             (Saiyajin(_,_), Humano) |
-             (Saiyajin(_,_), Saiyajin(_,_)) |
-             (Saiyajin(_,_), Namekusein) |
+             (Saiyajin(_, _), Humano) |
+             (Saiyajin(_, _), Saiyajin(_, _)) |
+             (Saiyajin(_, _), Namekusein) |
              (Namekusein, Humano) |
-             (Namekusein, Saiyajin(_,_)) |
+             (Namekusein, Saiyajin(_, _)) |
              (Namekusein, Namekusein) =>
           (atacante.aumentarEnergia(amigo.energia).aumentarEnergiaMaxima(amigo.energiaMaxima).cambiarEspecieA(Indefinido), oponente)
         case (_) =>
@@ -175,5 +251,4 @@ object Movimientos {
         (atacante, oponente.reducirEnergia(10 ^ atacante.roundsDejandoseFajar))
     }
   }
-
 }

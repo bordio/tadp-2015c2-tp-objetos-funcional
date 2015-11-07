@@ -1,8 +1,5 @@
 package ar.edu.tadp.dragonball
 
-import ar.edu.tadp.dragonball.DragonBall._
-import ar.edu.tadp.dragonball.Movimientos._
-
 case class Guerrero(nombre: String,
                     inventario: List[Item],
                     energia: Int,
@@ -141,11 +138,6 @@ case class Guerrero(nombre: String,
     copy(especie = unaEspecie)
 
   def tieneLas7Esferas() =
-    inventario.contains(Esfera1Estrella) &&
-      inventario.contains(Esfera2Estrella) &&
-      inventario.contains(Esfera3Estrella) &&
-      inventario.contains(Esfera4Estrella) &&
-      inventario.contains(Esfera5Estrella) &&
-      inventario.contains(Esfera6Estrella) &&
-      inventario.contains(Esfera7Estrella)
+    (1 to 7).forall(estrellas =>
+      inventario.contains(Esfera(estrellas)))
 }

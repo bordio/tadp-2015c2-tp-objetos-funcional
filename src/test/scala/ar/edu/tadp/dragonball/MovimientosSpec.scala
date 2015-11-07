@@ -1,7 +1,5 @@
 package ar.edu.tadp.dragonball
 
-import ar.edu.tadp.dragonball.DragonBall._
-import ar.edu.tadp.dragonball.Movimientos._
 import org.scalatest.{FlatSpec, Matchers}
 
 class MovimientosSpec extends FlatSpec with Matchers {
