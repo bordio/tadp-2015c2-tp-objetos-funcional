@@ -65,4 +65,8 @@ object DragonBall {
       copy(movimientos = movimientos :+ movimiento)
   }
 
+  trait ResultadoPelea
+  case class Ganador(ganador: Guerrero) extends ResultadoPelea
+  case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea
+
 }

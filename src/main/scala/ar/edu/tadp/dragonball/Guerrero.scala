@@ -43,6 +43,27 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
     }
   }
 
+  def pelearContra(oponente: Guerrero) = {
+    (planDeAtaque: PlanDeAtaque) => {
+      var atacanteActual = this
+      var oponenteActual = oponente
+      planDeAtaque.movimientos.foldLeft(SiguenPeleando(atacanteActual, oponenteActual): ResultadoPelea) { (resultadoAnterior, movimientoActual) =>
+
+        resultadoAnterior match {
+          case SiguenPeleando =>
+            val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteActual.pelearUnRound(movimientoActual)(oponenteActual)
+
+            (atacanteProximo.estado, oponenteProximo.estado) match {
+              case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
+              case (Muerto, _) => Ganador(oponenteProximo)
+              case (_) => SiguenPeleando(atacanteProximo, oponenteProximo)
+            }
+          case otro => otro
+        }
+      }
+    }
+  }
+
   def aumentarRoundsDejandoseFajar() =
     copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
 
