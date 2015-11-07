@@ -45,13 +45,11 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Int, energi
 
   def pelearContra(oponente: Guerrero) = {
     (planDeAtaque: PlanDeAtaque) => {
-      var atacanteActual = this
-      var oponenteActual = oponente
-      planDeAtaque.movimientos.foldLeft(SiguenPeleando(atacanteActual, oponenteActual): ResultadoPelea) { (resultadoAnterior, movimientoActual) =>
+      planDeAtaque.movimientos.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) { (resultadoAnterior, movimientoActual) =>
 
         resultadoAnterior match {
-          case SiguenPeleando =>
-            val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteActual.pelearUnRound(movimientoActual)(oponenteActual)
+          case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
+            val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
 
             (atacanteProximo.estado, oponenteProximo.estado) match {
               case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
