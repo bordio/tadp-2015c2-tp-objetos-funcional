@@ -4,26 +4,26 @@ case class Guerrero(nombre: String,
                     inventario: List[Item],
                     energia: Int,
                     energiaMaxima: Int,
-                    movimientos: List[Movimiento],
+                    movimientosPropios: Set[Movimiento],
                     especie: Especie,
                     estado: Estado,
                     roundsDejandoseFajar: Int = 0) {
 
-  def realizarMovimiento(oponente: Guerrero, movimiento: Movimiento) = {
-    if (movimientos.contains(movimiento)) movimiento(this, oponente) else (this, oponente)
+  lazy val movimientos: Set[Movimiento] = {
+    movimientosPropios ++ especie.movimientosEspeciales
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero) = {
     (criterio: Criterio) => {
       movimientos.maxBy(mov =>
-        criterio.cuantificar(this.realizarMovimiento(oponente, mov)._1, this.realizarMovimiento(oponente, mov)._2))
+        criterio(mov(this)(oponente)._1, mov(this)(oponente)._2))
     }
   }
 
   def pelearUnRound(movimiento: Movimiento) = {
     (oponente: Guerrero) => {
-      val (atacante, defensor) = this.realizarMovimiento(oponente, movimiento)
-      defensor.realizarMovimiento(atacante, defensor.movimientoMasEfectivoContra(this)(new CriterioEnergia))
+      val (atacante, defensor) = movimiento(this)(oponente)
+      defensor.movimientoMasEfectivoContra(this)(criterioEnergia)(defensor)(atacante)
     }
   }
 
@@ -125,8 +125,9 @@ case class Guerrero(nombre: String,
   def eliminarItem(item: Item) =
     copy(inventario = inventario.diff(List(item)))
 
-  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion) =
-    copy(movimientos = tipoDigestion.movimientosAlComerA(oponente, movimientos))
+  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
+    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
+  }
 
   def tieneFotoDeLuna() =
     inventario.contains(FotoDeLaLuna)
