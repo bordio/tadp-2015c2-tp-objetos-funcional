@@ -17,11 +17,9 @@ case class Guerrero(nombre: String,
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
-    movimientos
-      .map(mov => mov(this, oponente))
-      .map(resultado => unCriterio(resultado._1,resultado._2))
-      .maxBy(_._2)
-      ._1
+    movimientos.maxBy(
+      mov => unCriterio(mov(this,oponente))
+    )
   }
 }
 

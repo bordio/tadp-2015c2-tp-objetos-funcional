@@ -9,6 +9,8 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, Arma(Filosa)), 2000, 1350, Saiyajin(SuperSaiyajin(1), false), Luchando, Ataques)
   val androide18: Guerrero = Guerrero("Androide18", List(Arma(Fuego(Glock)), Municion(Glock)), 1800, 900, Androide, Luchando, Ataques)
 
+  def quedarConMasEnergia(guerreros: Guerreros): Int = guerreros._1.energia
+
   describe ("Constructor") {
     it ("Goku should have") {
       goku should have(
@@ -49,6 +51,12 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         val estadoActual = DejarseFajar (CargarKi (DejarseFajar (DejarseFajar (goku, vegeta))))
         estadoActual ._1 .estado should not be (Fajado(3))
         estadoActual ._1 .estado should be (Fajado(1))
+      }
+    }
+
+    describe ("movimientoMasEfectivoContra") {
+      it ("Goku elige CargarKi porque lo deja con mas energia") {
+        goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia) should be(CargarKi)
       }
     }
   }
