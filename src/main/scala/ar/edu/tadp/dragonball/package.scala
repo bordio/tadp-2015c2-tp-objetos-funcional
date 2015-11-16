@@ -13,6 +13,7 @@ package object dragonball {
         case (KO, _) => guerreros
         case (Luchando, _) => movimiento(guerreros)
         case (Fajado(_), DejarseFajar) => movimiento(guerreros)
+        case (Fajado(_), _) => movimiento(atacante estas Luchando, oponente)
       }
     }
   }
