@@ -2,9 +2,9 @@ package ar.edu.tadp.dragonball
 
 abstract class Item
 
-case object SemillaDelErmitaño extends Item
+case object SemillaDelErmitanio extends Item
 case object FotoDeLaLuna extends Item
-case object EsferaDelDragon extends Item
+case class EsferaDelDragon(estrellas: Int) extends Item
 case class Arma(tipo: TipoArma) extends Item
 case class Municion(tipo: TipoArmaFuego) extends Item
 

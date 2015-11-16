@@ -4,10 +4,10 @@ import org.scalatest.{ShouldMatchers, FunSpec}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi)
-  val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna,EsferaDelDragon), 1000, 100, Saiyajin(Normal), Luchando, Ataques)
-  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitaño), 1000, 500, Saiyajin(Normal), Luchando, Ataques)
-  val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitaño, Arma(Filosa)), 2000, 1350, Saiyajin(SuperSaiyajin(1), false), Luchando, Ataques)
-  val androide18: Guerrero = Guerrero("Androide18", List(Arma(Fuego(Glock)),Municion(Glock)), 1800, 900, Androide, Luchando, Ataques)
+  val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 1000, 100, Saiyajin(Normal), Luchando, Ataques)
+  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 1000, 500, Saiyajin(Normal), Luchando, Ataques)
+  val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, Arma(Filosa)), 2000, 1350, Saiyajin(SuperSaiyajin(1), false), Luchando, Ataques)
+  val androide18: Guerrero = Guerrero("Androide18", List(Arma(Fuego(Glock)), Municion(Glock)), 1800, 900, Androide, Luchando, Ataques)
 
   describe ("Constructor") {
     it ("Goku should have") {
