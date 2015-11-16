@@ -9,9 +9,7 @@ case class Guerrero(nombre: String,
                     movimientos: List[Movimiento]) {
 
   def estas(nuevoEstado: Estado) : Guerrero = {
-    nuevoEstado match {
-      case _ => copy(estado = nuevoEstado)
-    }
+    copy(estado = nuevoEstado)
   }
 
   def aumentarEnergia(aumento: Int) = {
