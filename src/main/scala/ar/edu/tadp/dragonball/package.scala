@@ -24,15 +24,29 @@ package object dragonball {
 
 
   /* ESPECIES */
-  trait Especie
 
-  case class Saiyajin(nivel: Int = 0, tieneCola: Boolean = true) extends Especie
+  trait Magico
+  trait Fusionable
 
-  case object Humano extends Especie
+  abstract class Especie
 
+  case object Humano extends Especie with Fusionable
   case object Androide extends Especie
+  case object Namekusein extends Especie with Fusionable with Magico
+  case class Saiyajin(estado: EstadoSaiyajin, tieneCola: Boolean = true) extends Especie with Fusionable
 
-  case object Namekusein extends Especie
+  /*estados de la especie Saiyajin*/
+  abstract class EstadoSaiyajin {
+    def proximoNivelZ = 1
+  }
+
+  case object Normal extends EstadoSaiyajin
+
+  case class SuperSaiyajin(nivel: Int) extends EstadoSaiyajin {
+    override def proximoNivelZ = nivel + 1
+  }
+
+  case object MonoGigante extends EstadoSaiyajin
 
   class TipoDigestion {
 
@@ -44,22 +58,13 @@ package object dragonball {
 
   case object Indefinido extends Especie
 
-
-
   /* ESTADOS */
-
-  trait Estado
-
-  case object SuperSaiyajin extends Estado
-
-  case object MonoGigante extends Estado
-
-  case object Normal extends Estado
-
+  abstract class Estado
+  case object Luchando extends Estado
+  case class Fajado(rounds: Int) extends Estado
   case object KO extends Estado
-
   case object Muerto extends Estado
-
+  case object Reposo extends Estado
 
 
   /* PLAN DE ATAQUE */
@@ -88,12 +93,12 @@ package object dragonball {
   val dejarseFajar = (atacante: Guerrero, oponente: Guerrero) => (atacante.aumentarRoundsDejandoseFajar(), oponente)
 
   val cargarKi = (atacante: Guerrero, oponente: Guerrero) => {
-    (atacante.especie, atacante.estado) match {
-      case (Saiyajin(nivel, _), SuperSaiyajin) =>
+    atacante.especie match {
+      case (Saiyajin(SuperSaiyajin(nivel), _)) =>
         (atacante.aumentarEnergia(150 * nivel), oponente)
-      case (Androide, _) =>
+      case Androide =>
         (atacante, oponente)
-      case (_) =>
+      case _ =>
         (atacante.aumentarEnergia(100), oponente)
     }
   }
@@ -106,10 +111,10 @@ package object dragonball {
           case (ArmaRoma, Androide, _) => (atacante, oponente)
           case (ArmaRoma, _, _) => (atacante, oponente.quedarKOSiEnergiaMenorA(300))
 
-          case (ArmaFilosa, Saiyajin(nivel, _), MonoGigante) =>
-            (atacante, oponente.cambiarEspecieA(Saiyajin(nivel, tieneCola = false)).cambiarEnergiaA(1).cambiarEstadoA(KO))
-          case (ArmaFilosa, Saiyajin(nivel, tieneCola), _) if tieneCola =>
-            (atacante, oponente.cambiarEspecieA(Saiyajin(nivel, tieneCola = false)).cambiarEnergiaA(1))
+          case (ArmaFilosa, Saiyajin(MonoGigante, _),_) =>
+            (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, tieneCola = false)).cambiarEnergiaA(1).cambiarEstadoA(KO))
+          case (ArmaFilosa, Saiyajin(estado, tieneCola), _) if tieneCola =>
+            (atacante, oponente.cambiarEspecieA(Saiyajin(estado, tieneCola = false)).cambiarEnergiaA(1))
           case (ArmaFilosa, _, _) =>
             (atacante, oponente.reducirEnergia(atacante.energia / 100))
 
@@ -141,7 +146,7 @@ package object dragonball {
   val convertirseEnMono = (atacante: Guerrero, oponente: Guerrero) => {
     atacante.especie match {
       case Saiyajin(_, tieneCola) if tieneCola && atacante.tieneFotoDeLuna() =>
-        (atacante.cambiarEstadoA(MonoGigante).recuperarEnergiaMaxima().multiplicarEnergiaMaximaPor(3), oponente)
+        (atacante.cambiarEstadoSaiyajin(MonoGigante,tieneCola).recuperarEnergiaMaxima().multiplicarEnergiaMaximaPor(3), oponente)
       case _ =>
         (atacante, oponente)
     }
@@ -149,8 +154,8 @@ package object dragonball {
 
   val convertirseEnSuperSaiyajin = (atacante: Guerrero, oponente: Guerrero) => {
     atacante.especie match {
-      case Saiyajin(nivel, tieneCola) if atacante.puedeSubirDeNivel() =>
-        (atacante.cambiarEstadoA(SuperSaiyajin).multiplicarEnergiaMaximaPor(5).cambiarEspecieA(Saiyajin(nivel + 1, tieneCola)), oponente)
+      case Saiyajin(estado, tieneCola) if atacante.puedeSubirDeNivel() =>
+        (atacante.cambiarEstadoSaiyajin(SuperSaiyajin(0),tieneCola).multiplicarEnergiaMaximaPor(5), oponente)
       case _ =>
         (atacante, oponente)
     }

@@ -91,15 +91,11 @@ case class Guerrero(nombre: String,
     copy(energia = cantidad)
 
   def cambiarEstadoA(unEstado: Estado) = {
-    val guerrero = copy(estado = unEstado)
-    if (estado == SuperSaiyajin && unEstado != SuperSaiyajin) {
-      guerrero.especie match {
-        case Saiyajin(_, tieneCola) =>
-          guerrero.cambiarEspecieA(Saiyajin(0, tieneCola))
-      }
-    } else {
-      guerrero
-    }
+    copy(estado = unEstado)
+  }
+
+  def cambiarEstadoSaiyajin(nuevoEstado: EstadoSaiyajin, tieneCola:Boolean) : Guerrero = {
+    copy(especie = Saiyajin(nuevoEstado,tieneCola))
   }
 
   def quedarKOSiEnergiaMenorA(cantidad: Int) =
