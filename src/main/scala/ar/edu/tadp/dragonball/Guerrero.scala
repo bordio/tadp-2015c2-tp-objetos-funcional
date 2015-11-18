@@ -30,6 +30,13 @@ case class Guerrero(nombre: String,
     defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(atacante, defensor)
   }
 
+  def planDeAtaqueContra (oponente: Guerrero, cantidadDeRounds: Int) (unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
+    case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
+    case _ =>
+      val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
+      val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
+      List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
+  }
 }
 
 abstract class Estado
