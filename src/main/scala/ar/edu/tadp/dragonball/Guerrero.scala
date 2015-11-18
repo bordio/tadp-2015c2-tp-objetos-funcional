@@ -1,5 +1,8 @@
 package ar.edu.tadp.dragonball
 
+import ar.edu.tadp.dragonball.Criterios._
+import ar.edu.tadp.dragonball.Movimientos._
+
 case class Guerrero(nombre: String,
                     items: List[Item],
                     energiaMaxima: Int,
@@ -21,6 +24,12 @@ case class Guerrero(nombre: String,
       mov => unCriterio(mov(this,oponente))
     )
   }
+
+  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
+    val (atacante, defensor) = movimiento(this, oponente)
+    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(atacante, defensor)
+  }
+
 }
 
 abstract class Estado

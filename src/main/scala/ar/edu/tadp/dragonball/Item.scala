@@ -6,15 +6,15 @@ case object SemillaDelErmitanio extends Item
 case object FotoDeLaLuna extends Item
 case class EsferaDelDragon(estrellas: Int) extends Item
 case class Arma(tipo: TipoArma) extends Item
-case class Municion(tipo: TipoArmaFuego) extends Item
+case class Municion(tipo: ArmaDeFuego) extends Item
 
 abstract class TipoArma
 
 case object Roma extends TipoArma
 case object Filosa extends TipoArma
-case class Fuego(tipo: TipoArmaFuego) extends TipoArma
+case class deFuego(tipo: ArmaDeFuego) extends TipoArma
 
-trait TipoArmaFuego
+trait ArmaDeFuego
 
-case object Colt extends TipoArmaFuego
-case object Glock extends TipoArmaFuego
+case object Colt extends ArmaDeFuego
+case object Glock extends ArmaDeFuego

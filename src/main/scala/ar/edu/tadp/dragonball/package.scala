@@ -1,8 +1,7 @@
-package ar.edu.tadp
+package ar.edu.tadp.dragonball
 
-package object dragonball {
+package object Movimientos {
   type Guerreros = (Guerrero, Guerrero)
-  type Criterio = Guerreros => Int
 
   abstract class Movimiento {
     def movimiento(guerreros: Guerreros): Guerreros
