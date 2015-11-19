@@ -12,6 +12,7 @@ package object Movimientos {
         case (KO, _) => guerreros
         case (Luchando, _) => movimiento(guerreros)
         case (Fajado(_), DejarseFajar) => movimiento(guerreros)
+        case (Fajado(_), Genkidama) => movimiento(guerreros)
         case (Fajado(_), _) => movimiento(atacante estas Luchando, oponente)
       }
     }
@@ -100,7 +101,7 @@ package object Movimientos {
   case object Genkidama extends Ataque(Energia) {
     override def ataque(atacante: Guerrero, oponente: Guerrero) = {
       atacante.estado match {
-        case Fajado(rounds) => (0, -(10 ^ rounds))
+        case Fajado(rounds) => (0, -(Math.pow(10, rounds).toInt))
         case _ => (0, -10)
       }
     }
