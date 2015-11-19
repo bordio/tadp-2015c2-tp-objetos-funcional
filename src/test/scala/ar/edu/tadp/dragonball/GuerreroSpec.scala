@@ -62,5 +62,14 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         vegeta.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia) should be(DejarseFajar)
       }
     }
+
+    describe ("planDeAtaqueContra") {
+      it ("Goku para quedar con mas energia durante dos turnos, siempre elige CargarKi") {
+        goku.planDeAtaqueContra(vegeta, 2) (quedarConMasEnergia) should be(List(CargarKi, CargarKi))
+      }
+      it ("Como a Vegeta le gusta que lo caguen a palos, en 3 turnos siempre elige DejarseFajar") {
+        vegeta.planDeAtaqueContra(androide18, 3)(quedarConMenosEnergia) should be(List(DejarseFajar,DejarseFajar,DejarseFajar))
+      }
+    }
   }
 }
