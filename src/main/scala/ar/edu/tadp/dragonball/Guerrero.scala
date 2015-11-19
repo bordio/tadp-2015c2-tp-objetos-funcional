@@ -15,8 +15,10 @@ case class Guerrero(nombre: String,
     copy(estado = nuevoEstado)
   }
 
-  def aumentarEnergia(aumento: Int) = {
-    copy(energia = (aumento + energia).max(0).min(energiaMaxima))
+  def actualizarEnergia(variacion: Int) = {
+    val guerrero = copy(energia = (energia + variacion).max(0).min(energiaMaxima))
+    if (guerrero.energia <= 0) guerrero estas Muerto
+    else guerrero
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
@@ -33,7 +35,7 @@ case class Guerrero(nombre: String,
   def planDeAtaqueContra (oponente: Guerrero, cantidadDeRounds: Int) (unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
     case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
     case _ =>
-      val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
+      val mov = movimientoMasEfectivoContra(oponente) (unCriterio)
       val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
       List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
   }
