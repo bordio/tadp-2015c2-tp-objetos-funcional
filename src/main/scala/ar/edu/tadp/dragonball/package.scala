@@ -83,24 +83,113 @@ package object dragonball {
 
   /* MOVIMIENTOS */
 
-  type Movimiento = Guerrero => Guerrero => (Guerrero, Guerrero)
+  abstract class Movimiento {
+    def movimiento(atacante: Guerrero, oponente: Guerrero): (Guerrero,Guerrero)
+    def apply(atacante: Guerrero, oponente: Guerrero) = {
+      (atacante.estado, this) match {
+        case (Muerto, _) => (atacante, oponente)
+        case (KO, _) => (atacante, oponente)
+        /*case (Luchando, _) => movimiento(atacante, oponente)
+        case (Fajado(_), DejarseFajar) => movimiento(atacante, oponente)
+        case (Fajado(_), Genkidama) => movimiento(atacante, oponente)
+        case (Fajado(_), _) => movimiento(atacante estas Luchando, oponente)*/
+      }
+    }
+  }
 
-  val dejarseFajar: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => (atacante.aumentarRoundsDejandoseFajar(), oponente)
+  case object DejarseFajar extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      atacante.estado match {
+       /* case Luchando => (atacante estas Fajado(1), oponente)
+        case Fajado(rounds) => (atacante estas Fajado(rounds + 1), oponente)*/
+        case _ => (atacante, oponente)
+      }
+    }
+  }
 
-  val cargarKi: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    (atacante.especie, atacante.estado) match {
-      case (Saiyajin(nivel, _), SuperSaiyajin) =>
-        (atacante.aumentarEnergia(150 * nivel), oponente)
-      case (Androide, _) =>
-        (atacante, oponente)
-      case (_) =>
-        (atacante.aumentarEnergia(100), oponente)
+  case object CargarKi extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      /* atacante.especie match {
+         case Saiyajin(SuperSaiyajin(nivel), _) => (atacante actualizarEnergia (150 * nivel), oponente)
+         case Androide => (atacante, oponente)
+         case _ => (atacante actualizarEnergia 100, oponente)
+      }*/(atacante, oponente)
+    }
+  }
+
+  case object ComerseAlOponente extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      atacante.especie match {
+       // case Monstruo(digerir) => (digerir(atacante, oponente), oponente estas Muerto)
+        case _ => (atacante, oponente)
+      }
+    }
+  }
+
+  case object ConvertirseEnMono extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      atacante.especie match {
+        case Saiyajin(_, tieneCola) if tieneCola && atacante.tieneFotoDeLuna() =>
+          (atacante.cambiarEstadoA(MonoGigante).recuperarEnergiaMaxima().multiplicarEnergiaMaximaPor(3), oponente)
+        case _ =>
+          (atacante, oponente)
+      }
+    }
+  }
+
+  case object ConvertirseEnSuperSaiyajin extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      atacante.especie match {
+        case Saiyajin(nivel, tieneCola) if atacante.puedeSubirDeNivel() =>
+          (atacante.cambiarEstadoA(SuperSaiyajin).multiplicarEnergiaMaximaPor(5).cambiarEspecieA(Saiyajin(nivel + 1, tieneCola)), oponente)
+        case _ =>
+          (atacante, oponente)
+      }
+    }
+  }
+
+  case object Explotar extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      (atacante.especie, oponente.especie) match {
+        case (Monstruo(_, _), Namekusein) =>
+          var valorAReducir = 2 * atacante.energia
+          if (valorAReducir >= oponente.energia) {
+            valorAReducir = oponente.energia - 1
+          }
+          (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(valorAReducir))
+        case (Androide, Namekusein) =>
+          var valorAReducir = 3 * atacante.energia
+          if (valorAReducir >= oponente.energia) {
+            valorAReducir = oponente.energia - 1
+          }
+          (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(valorAReducir))
+        case (Monstruo(_, _), _) =>
+          (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(2 * atacante.energia))
+        case (Androide, _) =>
+          (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(3 * atacante.energia))
+        case (_) =>
+          (atacante, oponente)
+      }
+    }
+  }
+
+  case object  MuchosGolpesNinja extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      (atacante.especie, oponente.especie) match {
+        case (Humano, Androide) =>
+          (atacante.reducirEnergia(10), oponente)
+        case (_) =>
+          if (atacante.energia >= oponente.energia) {
+            (atacante, oponente.reducirEnergia(20))
+          } else {
+            (atacante.reducirEnergia(20), oponente)
+          }
+      }
     }
   }
 
   case class UsarItem(item: Item) extends Movimiento {
-    def apply(atacante: Guerrero) = (oponente: Guerrero) => {
-
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
       if (atacante.tieneItem(item)) {
         (item, oponente.especie, oponente.estado) match {
           case (ArmaRoma, Androide, _) => (atacante, oponente)
@@ -128,36 +217,9 @@ package object dragonball {
     }
   }
 
-  val comerseAlOponente: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    atacante.especie match {
-      case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
-        (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente.cambiarEstadoA(Muerto))
-      case _ =>
-        //atacante.pasarVerguenza()
-        (atacante, oponente)
-    }
-  }
-
-  val convertirseEnMono: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    atacante.especie match {
-      case Saiyajin(_, tieneCola) if tieneCola && atacante.tieneFotoDeLuna() =>
-        (atacante.cambiarEstadoA(MonoGigante).recuperarEnergiaMaxima().multiplicarEnergiaMaximaPor(3), oponente)
-      case _ =>
-        (atacante, oponente)
-    }
-  }
-
-  val convertirseEnSuperSaiyajin: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    atacante.especie match {
-      case Saiyajin(nivel, tieneCola) if atacante.puedeSubirDeNivel() =>
-        (atacante.cambiarEstadoA(SuperSaiyajin).multiplicarEnergiaMaximaPor(5).cambiarEspecieA(Saiyajin(nivel + 1, tieneCola)), oponente)
-      case _ =>
-        (atacante, oponente)
-    }
-  }
 
   case class Fusion(amigo: Guerrero) extends Movimiento {
-    def apply(atacante: Guerrero) = (oponente: Guerrero) => {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
       (atacante.especie, amigo.especie) match {
         case (Humano, Humano) |
              (Humano, Saiyajin(_, _)) |
@@ -176,7 +238,7 @@ package object dragonball {
   }
 
   case class Magia(estado: Estado, objetivo: Guerrero) extends Movimiento {
-    def apply(atacante: Guerrero) = (oponente: Guerrero) => {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
       atacante.especie match {
         case Namekusein | Monstruo(_, _) | _ if atacante.tieneLas7Esferas() =>
           if (objetivo == atacante) {
@@ -192,44 +254,9 @@ package object dragonball {
     }
   }
 
-  val muchosGolpesNinja: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    (atacante.especie, oponente.especie) match {
-      case (Humano, Androide) =>
-        (atacante.reducirEnergia(10), oponente)
-      case (_) =>
-        if (atacante.energia >= oponente.energia) {
-          (atacante, oponente.reducirEnergia(20))
-        } else {
-          (atacante.reducirEnergia(20), oponente)
-        }
-    }
-  }
 
-  val explotar: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    (atacante.especie, oponente.especie) match {
-      case (Monstruo(_, _), Namekusein) =>
-        var valorAReducir = 2 * atacante.energia
-        if (valorAReducir >= oponente.energia) {
-          valorAReducir = oponente.energia - 1
-        }
-        (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(valorAReducir))
-      case (Androide, Namekusein) =>
-        var valorAReducir = 3 * atacante.energia
-        if (valorAReducir >= oponente.energia) {
-          valorAReducir = oponente.energia - 1
-        }
-        (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(valorAReducir))
-      case (Monstruo(_, _), _) =>
-        (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(2 * atacante.energia))
-      case (Androide, _) =>
-        (atacante.cambiarEnergiaA(0).cambiarEstadoA(Muerto), oponente.reducirEnergia(3 * atacante.energia))
-      case (_) =>
-        (atacante, oponente)
-    }
-  }
-
-  case class onda(energiaRequerida: Int) extends Movimiento {
-    def apply(atacante: Guerrero) = (oponente: Guerrero) => {
+  case class Onda(energiaRequerida: Int) extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
       oponente.especie match {
         case Monstruo(_, _) if atacante.energia > energiaRequerida =>
           (atacante.reducirEnergia(energiaRequerida), oponente.reducirEnergia(energiaRequerida / 2))
@@ -243,12 +270,14 @@ package object dragonball {
     }
   }
 
-  val genkidama: Movimiento = (atacante: Guerrero) => (oponente: Guerrero) => {
-    oponente.especie match {
-      case Androide =>
-        (atacante, oponente.aumentarEnergia(10 ^ atacante.roundsDejandoseFajar))
-      case _ =>
-        (atacante, oponente.reducirEnergia(10 ^ atacante.roundsDejandoseFajar))
+  case object Genkidama extends Movimiento {
+    override def movimiento(atacante: Guerrero, oponente: Guerrero) = {
+      oponente.especie match {
+        case Androide =>
+          (atacante, oponente.aumentarEnergia(10 ^ atacante.roundsDejandoseFajar))
+        case _ =>
+          (atacante, oponente.reducirEnergia(10 ^ atacante.roundsDejandoseFajar))
+      }
     }
   }
 
