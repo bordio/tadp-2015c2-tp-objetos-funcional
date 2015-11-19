@@ -165,28 +165,6 @@ package object dragonball {
     }
   }
 
-  case class Fusion(amigo: Guerrero) extends Movimiento {
-    def apply(atacante: Guerrero) = (oponente: Guerrero) => {
-      (atacante.especie, amigo.especie) match {
-        case (_: Fusionable,_: Fusionable) =>
-          println("entro")
-          (atacante.especie, amigo.especie) match {
-            case (Humano, Humano) |
-                 (Humano, Saiyajin(_, _)) |
-                 (Humano, Namekusein) |
-                 (Saiyajin(_, _), Humano) |
-                 (Saiyajin(_, _), Saiyajin(_, _)) |
-                 (Saiyajin(_, _), Namekusein) |
-                 (Namekusein, Humano) |
-                 (Namekusein, Saiyajin(_, _)) |
-                 (Namekusein, Namekusein) =>
-              (atacante.aumentarEnergia(amigo.energia).aumentarEnergiaMaxima(amigo.energiaMaxima).cambiarEspecieA(Fusionado), oponente)
-            case (_) =>
-              (atacante, oponente)
-          }
-      }
-    }
-  }
 
   case class Magia(estado: Estado, objetivo: Guerrero) extends Movimiento {
     def apply(atacante: Guerrero) = (oponente: Guerrero) => {

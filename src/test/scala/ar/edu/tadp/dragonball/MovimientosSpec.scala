@@ -67,4 +67,3 @@ class MovimientosSpec extends FlatSpec with Matchers {
   }
 
 }
-
