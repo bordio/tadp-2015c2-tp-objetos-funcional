@@ -2,16 +2,18 @@ package ar.edu.tadp.dragonball
 
 import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
+import ar.edu.tadp.dragonball.TiposDeDigestion._
 import org.scalatest.{ShouldMatchers, FunSpec}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
-  val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
-  val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 1000, 100, Saiyajin(Normal), Luchando, Ataques)
-  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 1000, 500, Saiyajin(Normal), Luchando, Ataques)
-  val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, Arma(Filosa)), 2000, 1350, Saiyajin(SuperSaiyajin(1), false), Luchando, Ataques)
-  val androide18: Guerrero = Guerrero("Androide18", List(Arma(deFuego(Glock)), Municion(Glock)), 1800, 900, Androide, Luchando, Ataques ++ List(Explotar))
+  val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama, comerseAlOponente)
+  val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal), Luchando, Ataques)
+  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques)
+  val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, Arma(Filosa)), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
+  val androide18: Guerrero = Guerrero("Androide18", List(Arma(deFuego(Glock)), Municion(Glock)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar))
   val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
-  val androideDebil: Guerrero = Guerrero("Androide16", List(Arma(deFuego(Glock)), Municion(Glock)), 300, 200, Androide, Luchando, Ataques ++ List(Explotar))
+  val androideDebil: Guerrero = Guerrero("Androide16", List(Arma(deFuego(Glock)), Municion(Glock)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar))
+  val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(DigestionCell), Luchando, Ataques)
 
   describe ("Constructor") {
     it ("Goku should have") {
@@ -96,7 +98,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
     describe ("Movimientos integrados") {
       it ("Si Goku se deja fajar 2 veces consecutivas, luego carga ki, y luego vuelve a dejarse fajar, el contador debe estar en 1") {
         val estadoActual = DejarseFajar (CargarKi (DejarseFajar (DejarseFajar (goku, vegeta))))
-        estadoActual ._1 .estado should not be (Fajado(3))
+        estadoActual ._1 .estado should not be Fajado(3)
         estadoActual ._1 .estado should be (Fajado(1))
       }
     }

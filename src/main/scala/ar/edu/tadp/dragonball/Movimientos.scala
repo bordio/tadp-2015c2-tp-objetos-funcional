@@ -40,6 +40,16 @@ package object Movimientos {
     }
   }
 
+  case object comerseAlOponente extends Movimiento {
+    override def movimiento(guerreros: Guerreros) = {
+      val (atacante, oponente) = guerreros
+      atacante.especie match {
+        case Monstruo(digerir) => (digerir(atacante, oponente), oponente estas Muerto)
+        case _ => guerreros
+      }
+    }
+  }
+
   trait TipoAtaque
   case object Fisico extends TipoAtaque
   case object Energia extends TipoAtaque
@@ -68,7 +78,7 @@ package object Movimientos {
   case object Explotar extends Ataque(Fisico) {
     override def ataque(atacante: Guerrero, oponente: Guerrero) = {
       atacante.especie match {
-        case Androide | Monstruo => explotar(atacante, oponente)
+        case Androide | Monstruo(_) => explotar(atacante, oponente)
         case _ => (0, 0)
       }
     }
@@ -92,7 +102,7 @@ package object Movimientos {
     override def ataque(atacante: Guerrero, oponente: Guerrero) = {
       if (atacante.energia < energiaNecesaria) (0,0)
       else oponente.especie match {
-        case Monstruo => (-energiaNecesaria, -(energiaNecesaria / 2))
+        case Monstruo(_) => (-energiaNecesaria, -(energiaNecesaria / 2))
         case _ => (-energiaNecesaria, -(energiaNecesaria * 2))
       }
     }
@@ -101,7 +111,7 @@ package object Movimientos {
   case object Genkidama extends Ataque(Energia) {
     override def ataque(atacante: Guerrero, oponente: Guerrero) = {
       atacante.estado match {
-        case Fajado(rounds) => (0, -(Math.pow(10, rounds).toInt))
+        case Fajado(rounds) => (0, -Math.pow(10, rounds).toInt)
         case _ => (0, -10)
       }
     }

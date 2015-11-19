@@ -5,8 +5,8 @@ import ar.edu.tadp.dragonball.Movimientos._
 
 case class Guerrero(nombre: String,
                     items: List[Item],
-                    energiaMaxima: Int,
                     energia: Int,
+                    energiaMaxima: Int,
                     especie: Especie,
                     estado: Estado,
                     movimientos: List[Movimiento]) {
@@ -19,6 +19,14 @@ case class Guerrero(nombre: String,
     val guerrero = copy(energia = (energia + variacion).max(0).min(energiaMaxima))
     if (guerrero.energia <= 0) guerrero estas Muerto
     else guerrero
+  }
+
+  def cambiaTuMovimientosPorLosDe(oponente: Guerrero) = {
+    copy(movimientos = oponente.movimientos)
+  }
+
+  def agregarMovimientosDe(oponente: Guerrero) = {
+    copy(movimientos = movimientos ++ oponente.movimientos)
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
