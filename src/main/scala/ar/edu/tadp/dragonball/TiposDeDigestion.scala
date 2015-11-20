@@ -1,24 +1,15 @@
 package ar.edu.tadp.dragonball
 
-import ar.edu.tadp.dragonball.Movimientos.Guerreros
+import ar.edu.tadp.dragonball.Movimientos.Movimiento
 
 package object TiposDeDigestion {
-  type FormaDeDigerir = Guerreros => Guerrero
+  type TipoDigestion = List[Guerrero] => List[Movimiento]
 
-  case object DigestionCell extends FormaDeDigerir {
-    def apply(guerreros: Guerreros): Guerrero = {
-      val (atacante, oponente) = guerreros
-      oponente.especie match {
-        case Androide => atacante agregarMovimientosDe oponente
-        case _ => atacante
-      }
-    }
+  val digestionCell: TipoDigestion = (guerreros: List[Guerrero]) => {
+    guerreros.filter(_. sosAndroide).flatMap(_. movimientosPropios).distinct
   }
 
-  case object DigestionMajinBoo extends FormaDeDigerir {
-    def apply(guerreros: Guerreros): Guerrero = {
-      val (atacante, oponente) = guerreros
-      atacante cambiaTuMovimientosPorLosDe oponente
-    }
+  val digestionMajinBoo: TipoDigestion = (guerreros: List[Guerrero]) => {
+    guerreros.last.movimientosPropios
   }
 }

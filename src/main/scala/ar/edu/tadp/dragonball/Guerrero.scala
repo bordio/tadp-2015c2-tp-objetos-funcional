@@ -2,6 +2,7 @@ package ar.edu.tadp.dragonball
 
 import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
+import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 
 case class Guerrero(nombre: String,
                     items: List[Item],
@@ -9,7 +10,11 @@ case class Guerrero(nombre: String,
                     energiaMaxima: Int,
                     especie: Especie,
                     estado: Estado,
-                    movimientos: List[Movimiento]) {
+                    movimientosPropios: List[Movimiento]) {
+
+  lazy val movimientos: List[Movimiento] = {
+    movimientosPropios ++ especie.movimientosEspeciales
+  }
 
   def estas(nuevoEstado: Estado) : Guerrero = {
     copy(estado = nuevoEstado)
@@ -24,14 +29,6 @@ case class Guerrero(nombre: String,
   def cambiarEnergiaA(nuevaEnergia: Int) = copy(energia = nuevaEnergia)
 
   def cambiarEnergiaMaximaA(nuevaEnergia: Int) = copy(energiaMaxima = nuevaEnergia)
-
-  def cambiaTuMovimientosPorLosDe(oponente: Guerrero) = {
-    copy(movimientos = oponente.movimientos)
-  }
-
-  def agregarMovimientosDe(oponente: Guerrero) = {
-    copy(movimientos = movimientos ++ oponente.movimientos)
-  }
 
   def tieneItem(item: Item): Boolean = {
     item match {
@@ -54,6 +51,11 @@ case class Guerrero(nombre: String,
     )
   }
 
+  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
+    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
+  }
+
+
   def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
     val (atacante, defensor) = movimiento(this, oponente)
     defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(atacante, defensor)
@@ -66,6 +68,9 @@ case class Guerrero(nombre: String,
       val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
       List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
   }
+
+  def sosAndroide = especie.equals(Androide)
+
 }
 
 abstract class Estado
@@ -74,3 +79,4 @@ case object Luchando extends Estado
 case class Fajado(rounds: Int) extends Estado
 case object KO extends Estado
 case object Muerto extends Estado
+case object Reposo extends Estado

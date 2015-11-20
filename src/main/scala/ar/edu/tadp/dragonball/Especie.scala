@@ -1,8 +1,11 @@
 package ar.edu.tadp.dragonball
 
-import ar.edu.tadp.dragonball.TiposDeDigestion.FormaDeDigerir
+import ar.edu.tadp.dragonball.Movimientos.Movimiento
+import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 
-abstract class Especie
+abstract class Especie {
+  def movimientosEspeciales: List[Movimiento] = List()
+}
 
 trait Magico
 trait Fusionable
@@ -10,7 +13,12 @@ trait Fusionable
 case object Humano extends Especie with Fusionable
 case object Androide extends Especie
 case object Namekusein extends Especie with Fusionable with Magico
-case class Monstruo(digerir: FormaDeDigerir) extends Especie with Magico
+case class Monstruo(tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) extends Especie {
+  override def movimientosEspeciales = {
+    tipoDigestion(guerrerosComidos)
+  }
+}
+
 case class Saiyajin(estado: EstadoSaiyajin, cola: Boolean = true) extends Especie with Fusionable
 
 abstract class EstadoSaiyajin {

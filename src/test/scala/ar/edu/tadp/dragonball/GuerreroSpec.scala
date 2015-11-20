@@ -6,14 +6,17 @@ import ar.edu.tadp.dragonball.TiposDeDigestion._
 import org.scalatest.{ShouldMatchers, FunSpec}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
-  val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama, comerseAlOponente)
+
+  val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal), Luchando, Ataques)
-  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques)
+  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques ++ List(UsarItem(FotoDeLaLuna)))
   val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, ArmaFilosa), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
-  val androide18: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar))
+  val androide18: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
+  val androide17: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 5000, 1800, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
   val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
-  val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar))
-  val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(DigestionCell), Luchando, Ataques)
+  val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar, Onda(80)))
+  val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(digestionCell,List()), Luchando, Ataques ++ List(ComerseAlOponente))
+  val majinBoo: Guerrero = Guerrero("Majin Boo",List(),50000,80000,Monstruo(digestionMajinBoo,List()),Luchando,Ataques ++ List(ComerseAlOponente))
 
   describe ("Constructor") {
     it ("Goku should have") {
@@ -47,6 +50,45 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
       it ("Si Goku se deja fajar 3 veces consecutivas, el contador debe contar 3") {
         DejarseFajar (DejarseFajar (DejarseFajar (goku, vegeta))) ._1 .estado should be (Fajado(3))
+      }
+    }
+
+    describe("ComerseAlOponente"){
+      it("Majin Boo come a vegeta, luego a goku (quienes deben morir). Y obtiene  solamente los poderes de goku") {
+        val (majinAlimentadoConVegeta: Guerrero, vegetaComido: Guerrero) = ComerseAlOponente(majinBoo,vegeta)
+        val (majinAlimentadoConGoku: Guerrero, gokuComido: Guerrero) = ComerseAlOponente(majinBoo,goku)
+
+        vegetaComido.estado should be (Muerto)
+        gokuComido.estado should be (Muerto)
+        majinAlimentadoConGoku.especie.movimientosEspeciales should be (goku.movimientosPropios)
+        majinAlimentadoConGoku.especie.movimientosEspeciales shouldNot be (vegeta.movimientosPropios)
+      }
+
+      it("Cell come a vegeta, luego a goku (quienes deben morir). Y no absorve sus poderes, ya que no son androides") {
+        val (cellAlimentadoConVegeta: Guerrero, vegetaComido: Guerrero) = ComerseAlOponente(cell,vegeta)
+        val (cellAlimentadoConGokuYVegeta: Guerrero, gokuComido: Guerrero) = ComerseAlOponente(cellAlimentadoConVegeta,goku)
+
+        vegetaComido.estado should be (Muerto)
+        gokuComido.estado should be (Muerto)
+        cellAlimentadoConVegeta.especie.movimientosEspeciales shouldNot be (goku.movimientosPropios)
+        cellAlimentadoConGokuYVegeta.especie.movimientosEspeciales shouldNot be (vegeta.movimientosPropios)
+      }
+
+      it("Cell come a Androide16 y a Androide18 (quienes deben morir). Y absorve sus poderes") {
+        val (cellAlimentadoConAndroide16: Guerrero, androide16Comido: Guerrero) = ComerseAlOponente(cell,androideDebil)
+        val (cellAlimentadoConAndroide16YAndroide18: Guerrero, androide18Comido: Guerrero) = ComerseAlOponente(cellAlimentadoConAndroide16,androide18)
+
+        androide16Comido.estado should be (Muerto)
+        androide18Comido.estado should be (Muerto)
+        cellAlimentadoConAndroide16.especie.movimientosEspeciales should be (androideDebil.movimientosPropios)
+        cellAlimentadoConAndroide16YAndroide18.especie.movimientosEspeciales should be ((androideDebil.movimientosPropios ++ androide18.movimientosPropios).distinct)
+      }
+
+      it("Cell intenta comerse a Androide17, quien tiene mayor ki. Por lo que no logra comerlo") {
+        val (cellSinComer: Guerrero, androide17SigueVivo: Guerrero) = ComerseAlOponente(cell,androide17)
+
+        androide17SigueVivo.estado shouldNot be (Muerto)
+        cellSinComer.especie.movimientosEspeciales shouldNot be (androide17.movimientosPropios)
       }
     }
 

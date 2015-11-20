@@ -40,11 +40,12 @@ package object Movimientos {
     }
   }
 
-  case object comerseAlOponente extends Movimiento {
+  case object ComerseAlOponente extends Movimiento {
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
       atacante.especie match {
-        case Monstruo(digerir) => (digerir(atacante, oponente), oponente estas Muerto)
+        case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
+          (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente.estas(Muerto))
         case _ => guerreros
       }
     }
@@ -127,7 +128,7 @@ package object Movimientos {
   case object Explotar extends Ataque(Fisico) {
     override def ataque(atacante: Guerrero, oponente: Guerrero) = {
       atacante.especie match {
-        case Androide | Monstruo(_) => explotar(atacante, oponente)
+        case Androide | Monstruo(_,_) => explotar(atacante, oponente)
         case _ => (0, 0)
       }
     }
@@ -151,7 +152,7 @@ package object Movimientos {
     override def ataque(atacante: Guerrero, oponente: Guerrero) = {
       if (atacante.energia < energiaNecesaria) (0,0)
       else oponente.especie match {
-        case Monstruo(_) => (-energiaNecesaria, -(energiaNecesaria / 2))
+        case Monstruo(_,_) => (-energiaNecesaria, -(energiaNecesaria / 2))
         case _ => (-energiaNecesaria, -(energiaNecesaria * 2))
       }
     }
