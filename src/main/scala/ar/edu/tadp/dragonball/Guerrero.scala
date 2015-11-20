@@ -41,8 +41,6 @@ case class Guerrero(nombre: String,
 
   def eliminarItem(item: Item) = copy(items = items.diff(List(item)))
 
-  def quedarKOSiEnergiaMenorA300 = if (energia < 300) estas(KO) else this
-
   def recuperarEnergiaMaxima = copy(energia = energiaMaxima)
 
   def cambiarEspecieA(otraEspecie: Especie) = copy(especie = otraEspecie)
