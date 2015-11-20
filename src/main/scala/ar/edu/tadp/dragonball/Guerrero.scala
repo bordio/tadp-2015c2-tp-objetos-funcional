@@ -49,6 +49,9 @@ case class Guerrero(nombre: String,
     copy(especie = Saiyajin(nuevoEstado,tieneCola))
   }
 
+  def agregarMovimientos(movimientos_nuevos: List[Movimiento]) =
+    copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
+
   def puedeSubirDeNivel() = energia >= energiaMaxima / 2
 
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =

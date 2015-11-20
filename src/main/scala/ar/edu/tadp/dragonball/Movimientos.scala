@@ -97,6 +97,22 @@ package object Movimientos {
     }
   }
 
+  case class Fusionarse(guerreroParaFusionar: Guerrero) extends Movimiento  {
+    override def movimiento(guerreros: Guerreros) = {
+      val (amigo, oponente) = guerreros
+      (amigo.especie, guerreroParaFusionar.especie) match {
+        case (_:Fusionable, _:Fusionable) =>
+          val nuevoGuerrero: Guerrero =
+            guerreroParaFusionar.cambiarEnergiaMaximaA(amigo.energiaMaxima + amigo.energiaMaxima)
+              .cambiarEnergiaA(amigo.energia + guerreroParaFusionar.energia)
+              .agregarMovimientos(amigo.movimientosPropios)
+              .cambiarEspecieA(Fusion)
+          (nuevoGuerrero, oponente)
+        case _ => (guerreroParaFusionar, amigo)
+      }
+    }
+  }
+
   trait TipoAtaque
   case object Fisico extends TipoAtaque
   case object Energia extends TipoAtaque
@@ -163,4 +179,5 @@ package object Movimientos {
       }
     }
   }
+
 }

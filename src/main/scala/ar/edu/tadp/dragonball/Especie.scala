@@ -13,6 +13,7 @@ trait Fusionable
 case object Humano extends Especie with Fusionable
 case object Androide extends Especie
 case object Namekusein extends Especie with Fusionable with Magico
+case object Fusion extends Especie
 case class Monstruo(tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) extends Especie {
   override def movimientosEspeciales = {
     tipoDigestion(guerrerosComidos)

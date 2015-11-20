@@ -86,6 +86,22 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
     }
 
+    describe("Fusionarse"){
+      it("Goku se fusiona con Vegeta"){
+        val (fusionado:Guerrero,vegetaSigueIgual:Guerrero) = Fusionarse(goku)(vegeta,androide17)
+        fusionado.especie should be (Fusion)
+        fusionado.energia should be (vegeta.energia + goku.energia)
+        fusionado.energiaMaxima should be (vegeta.energiaMaxima + goku.energiaMaxima)
+        fusionado.movimientos should be (vegeta.movimientos ++ goku.movimientos)
+      }
+
+      it("Goku intenta fusionarse con Cell, no lo logra ya que cell no es fusionable"){
+        val (fusionado:Guerrero,cellSigueIgual:Guerrero) = Fusionarse(goku)(cell,androide17)
+        (fusionado,cellSigueIgual) should be (goku,cell)
+        fusionado.especie shouldNot be (Fusion)
+      }
+    }
+
     describe("ComerseAlOponente"){
       it("Majin Boo come a vegeta, luego a goku (quienes deben morir). Y obtiene  solamente los poderes de goku") {
         val (majinAlimentadoConVegeta: Guerrero, vegetaComido: Guerrero) = ComerseAlOponente(majinBoo,vegeta)
