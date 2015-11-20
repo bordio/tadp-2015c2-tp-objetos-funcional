@@ -9,6 +9,7 @@ package object Movimientos {
       val (atacante, oponente) = guerreros
       (atacante.estado, this) match {
         case (Muerto, _) => guerreros
+        case (KO, UsarItem(SemillaDelErmitanio)) => movimiento(guerreros)
         case (KO, _) => guerreros
         case (Luchando, _) => movimiento(guerreros)
         case (Fajado(_), DejarseFajar) => movimiento(guerreros)
@@ -52,11 +53,12 @@ package object Movimientos {
   }
 
   case class UsarItem(item: Item) extends Movimiento {
+    def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.estas(KO) else guerrero
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
       (item, oponente.especie, oponente.estado) match {
         case (ArmaRoma, Androide, _) => (atacante, oponente)
-        case (ArmaRoma, _, _) => (atacante, oponente quedarKOSiEnergiaMenorA300)
+        case (ArmaRoma, _, _) => (atacante, quedarKOSiEnergiaMenorA300(oponente))
         case (ArmaFilosa, Saiyajin(MonoGigante, _), _) =>
           (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, cola = false)).cambiarEnergiaA(1).estas(KO))
         case (ArmaFilosa, Saiyajin(estado, tieneCola), _) if tieneCola =>
