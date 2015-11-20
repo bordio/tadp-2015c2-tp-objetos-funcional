@@ -49,6 +49,19 @@ package object Movimientos {
       }
     }
   }
+  
+  case class Magia(paseDeMagia: Guerreros => Guerreros) extends Movimiento {
+    override def movimiento(guerrreros: Guerreros) = {
+      val(atacante, oponente): Guerreros = guerrreros
+      atacante.especie match {
+        case _:Magico => paseDeMagia(guerrreros)
+        case _ if (atacante.tieneLas7Esferas) => paseDeMagia (atacante, oponente)
+        case _ => guerrreros
+      }
+    }
+
+
+  }
 
   trait TipoAtaque
   case object Fisico extends TipoAtaque

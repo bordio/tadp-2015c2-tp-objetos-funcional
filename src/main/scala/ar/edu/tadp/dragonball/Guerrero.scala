@@ -47,6 +47,10 @@ case class Guerrero(nombre: String,
       val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
       List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
   }
+  
+	def tieneLas7Esferas() =
+    (1 to 7).forall(estrellas =>
+      items.contains(EsferaDelDragon(estrellas)))
 }
 
 abstract class Estado

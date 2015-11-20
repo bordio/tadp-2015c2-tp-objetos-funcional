@@ -4,7 +4,7 @@ abstract class Item
 
 case object SemillaDelErmitanio extends Item
 case object FotoDeLaLuna extends Item
-case class EsferaDelDragon(estrellas: Int) extends Item
+case class EsferaDelDragon(cantidad: Int) extends Item
 case class Arma(tipo: TipoArma) extends Item
 case class Municion(tipo: ArmaDeFuego) extends Item
 

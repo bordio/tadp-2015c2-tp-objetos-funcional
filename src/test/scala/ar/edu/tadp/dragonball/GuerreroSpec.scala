@@ -7,6 +7,7 @@ import org.scalatest.{ShouldMatchers, FunSpec}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama, comerseAlOponente)
+  val hacertePensar: Function1[Guerreros,Guerreros] = { case (atacante,oponente) => (atacante, oponente.actualizarEnergia(2)) }
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal), Luchando, Ataques)
   val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques)
   val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, Arma(Filosa)), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
@@ -14,7 +15,8 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
   val androideDebil: Guerrero = Guerrero("Androide16", List(Arma(deFuego(Glock)), Municion(Glock)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar))
   val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(DigestionCell), Luchando, Ataques)
-
+  val piccolo: Guerrero = Guerrero("Piccolo", List(EsferaDelDragon(1),Arma(deFuego(Glock))), 450, 300, Namekusein, Luchando, Ataques ++ List(Magia(hacertePensar)))
+  
   describe ("Constructor") {
     it ("Goku should have") {
       goku should have(
@@ -126,5 +128,15 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         yajirobe.planDeAtaqueContra(goku,2)(quedarConMasEnergia) should be(List(Onda(150), CargarKi))
       }
     }
+    
+    describe ("piccolo hace magia") {
+      it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
+        val (a, c) = Magia(hacertePensar)(piccolo,goku)
+        c.nombre should be(goku.nombre)
+        c.energia should be(102)
+      }
+    }
+    
   }
 }
+
