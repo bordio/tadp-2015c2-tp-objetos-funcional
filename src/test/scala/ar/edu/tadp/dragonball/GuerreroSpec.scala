@@ -14,6 +14,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
   val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar))
   val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(DigestionCell), Luchando, Ataques)
+  val piccolo: Guerrero = Guerrero("Piccolo", List(), 1000, 1000, Namekusein, Luchando, Ataques)
 
   describe ("Constructor") {
     it ("Goku should have") {
@@ -92,7 +93,22 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
     }
 
     describe ("Explotar") {
-      //ToDO
+      it ("El androide16 es muy debil, y apesar de que explota no logra matar al oponente") {
+        val (androideMuerto, piccoloRePiyo) = Explotar (androideDebil, piccolo)
+         androideMuerto.estado should be(Muerto)
+        piccoloRePiyo.energia should be(600)
+      }
+      it ("El androide18 explota, y mata a yajirobe") {
+        val (androideMuerto, yajirobeMuerto) = Explotar (androide18, yajirobe)
+        androideMuerto.estado should be(Muerto)
+        yajirobeMuerto.estado should be(Muerto)
+      }
+      it ("El androide18 explota, y pero no puede matar al gran Piccolo Daimaku porque es namekuseiano") {
+        val (androideMuerto, piccoloExplotado) = Explotar (androide18, piccolo)
+        androideMuerto.estado should be(Muerto)
+        piccoloExplotado.estado should be(Luchando)
+        piccoloExplotado.energia should be(1)
+      }
     }
 
     describe ("Movimientos integrados") {

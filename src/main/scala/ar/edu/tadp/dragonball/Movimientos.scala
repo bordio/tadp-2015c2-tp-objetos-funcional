@@ -141,8 +141,8 @@ package object Movimientos {
       oponente.especie match {
         case Namekusein =>
           if (danioRecibido <= 0) (-atacante.energia,-(oponente.energia-1))
-          else (-atacante.energia, -danioRecibido)
-        case _ => (-atacante.energia, -danioRecibido)
+          else (-atacante.energia, -Math.abs(danioRecibido))
+        case _ => (-atacante.energia, -Math.abs(danioRecibido))
       }
     }
   }
