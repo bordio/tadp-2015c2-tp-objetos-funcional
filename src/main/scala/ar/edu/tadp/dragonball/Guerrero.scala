@@ -55,16 +55,15 @@ case class Guerrero(nombre: String,
     copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
   }
 
-
   def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
     val (atacante, defensor) = movimiento(this, oponente)
-    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(atacante, defensor)
+    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(defensor, atacante).swap
   }
 
-  def planDeAtaqueContra (oponente: Guerrero, cantidadDeRounds: Int) (unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
     case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
     case _ =>
-      val mov = movimientoMasEfectivoContra(oponente) (unCriterio)
+      val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
       val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
       List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
   }
