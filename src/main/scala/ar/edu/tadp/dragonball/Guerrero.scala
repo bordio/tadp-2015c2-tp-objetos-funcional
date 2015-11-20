@@ -23,6 +23,8 @@ case class Guerrero(nombre: String,
 
   def cambiarEnergiaA(nuevaEnergia: Int) = copy(energia = nuevaEnergia)
 
+  def cambiarEnergiaMaximaA(nuevaEnergia: Int) = copy(energiaMaxima = nuevaEnergia)
+
   def cambiaTuMovimientosPorLosDe(oponente: Guerrero) = {
     copy(movimientos = oponente.movimientos)
   }

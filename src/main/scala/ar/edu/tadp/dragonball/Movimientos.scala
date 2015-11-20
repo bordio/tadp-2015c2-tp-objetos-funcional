@@ -70,6 +70,35 @@ package object Movimientos {
     }
   }
 
+  case object ConvertirseEnMono extends Movimiento {
+    override def movimiento(guerreros: Guerreros) = {
+      val (atacante, oponente) = guerreros
+      (atacante.especie, atacante.energiaMaxima) match {
+        case (Saiyajin(MonoGigante, _), _) => (atacante, oponente)
+        case (Saiyajin(fase, true), energiaMaxima) if atacante tieneItem FotoDeLaLuna =>
+          val mono = (atacante cambiarEspecieA Saiyajin(MonoGigante)
+                                cambiarEnergiaMaximaA (3 * energiaMaxima)
+                                recuperarEnergiaMaxima)
+          (mono, oponente)
+        case _ => (atacante, oponente)
+      }
+    }
+  }
+
+  case object ConvertirseEnSuperSaiyajin extends Movimiento {
+    override def movimiento(guerreros: Guerreros) = {
+      val (atacante, oponente) = guerreros
+      (atacante.especie, atacante.energia, atacante.energiaMaxima) match {
+        case (Saiyajin(MonoGigante, _), _, _) => (atacante, oponente)
+        case (Saiyajin(fase, cola), energia, energiaMaxima) if energia > energiaMaxima / 2 =>
+          val superSaiyajin = (atacante cambiarEspecieA Saiyajin(SuperSaiyajin(fase.proximoNivelZ), cola)
+                                        cambiarEnergiaMaximaA (5 * fase.proximoNivelZ * energiaMaxima))
+          (superSaiyajin, oponente)
+        case _ => (atacante, oponente)
+      }
+    }
+  }
+
   trait TipoAtaque
   case object Fisico extends TipoAtaque
   case object Energia extends TipoAtaque
