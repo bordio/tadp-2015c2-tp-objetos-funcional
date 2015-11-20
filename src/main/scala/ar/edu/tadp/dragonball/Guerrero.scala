@@ -66,6 +66,21 @@ case class Guerrero(nombre: String,
       val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
       List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
   }
+
+  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
+    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
+      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
+        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
+          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
+          (atacanteProximo.estado, oponenteProximo.estado) match {
+            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
+            case (Muerto, _) => Ganador(oponenteProximo)
+            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
+          }
+        case otro => otro
+      }
+    }
+  }
 }
 
 abstract class Estado
@@ -74,3 +89,7 @@ case object Luchando extends Estado
 case class Fajado(rounds: Int) extends Estado
 case object KO extends Estado
 case object Muerto extends Estado
+
+trait ResultadoPelea
+case class Ganador(ganador: Guerrero) extends ResultadoPelea
+case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea
