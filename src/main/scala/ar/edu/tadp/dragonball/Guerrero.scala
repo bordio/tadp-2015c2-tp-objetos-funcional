@@ -47,6 +47,15 @@ case class Guerrero(nombre: String,
 
   def cambiarEspecieA(otraEspecie: Especie) = copy(especie = otraEspecie)
 
+  def cambiarEstadoSaiyajin(nuevoEstado: EstadoSaiyajin, tieneCola:Boolean) : Guerrero = {
+    copy(especie = Saiyajin(nuevoEstado,tieneCola))
+  }
+
+  def puedeSubirDeNivel() = energia >= energiaMaxima / 2
+
+  def multiplicarEnergiaMaximaPor(multiplicador: Int) =
+    copy(energiaMaxima = energiaMaxima * multiplicador)
+
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
     movimientos.maxBy(
       mov => unCriterio(mov(this,oponente))

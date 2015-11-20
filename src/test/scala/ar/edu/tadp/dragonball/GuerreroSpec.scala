@@ -8,8 +8,8 @@ import org.scalatest.{ShouldMatchers, FunSpec}
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
-  val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal), Luchando, Ataques)
-  val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques ++ List(UsarItem(FotoDeLaLuna)))
+  val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal,false), Luchando, Ataques)
+  val vegeta: Guerrero = Guerrero("vegeta", List(FotoDeLaLuna,SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques ++ List(UsarItem(FotoDeLaLuna)))
   val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, ArmaFilosa), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
   val androide18: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
   val androide17: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 5000, 1800, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
@@ -25,7 +25,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         'nombre ("goku"),
         'energia (100),
         'energiaMaxima (1000),
-        'especie (Saiyajin(Normal)),
+        'especie (Saiyajin(Normal,false)),
         'estado (Luchando),
         'movimientos (Ataques)
       )
@@ -51,6 +51,38 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
       it ("Si Goku se deja fajar 3 veces consecutivas, el contador debe contar 3") {
         DejarseFajar (DejarseFajar (DejarseFajar (goku, vegeta))) ._1 .estado should be (Fajado(3))
+      }
+    }
+
+    describe ("ConvertirseEnMono"){
+      it("MajinBu intenta convertirse en mono y no puede, al no ser un saiyajin"){
+        ConvertirseEnMono(majinBoo,goku) ._1 .especie shouldNot be (Saiyajin(MonoGigante,true))
+      }
+
+      it("Goku intenta convertirse en mono y no puede, no tiene cola"){
+        ConvertirseEnMono(goku,majinBoo) ._1 .especie shouldNot be (Saiyajin(MonoGigante,true))
+      }
+
+      it("Vegeta intenta convertirse en mono y puede, ya que tiene cola y foto de la luna"){
+        ConvertirseEnMono(vegeta,majinBoo) ._1 .especie should be (Saiyajin(MonoGigante,true))
+      }
+    }
+
+    describe("ConvertirseEnSuperSaiyajin"){
+
+      it("MajinBu intenta convertirse en SS y no puede, al no ser un saiyajin"){
+        ConvertirseEnSuperSaiyajin(majinBoo,goku) ._1 .especie shouldNot be (Saiyajin(SuperSaiyajin(1),true))
+      }
+
+      it("Goku intenta convertirse en superSaiyajin. No puede al no alcanzarle su energia"){
+        ConvertirseEnSuperSaiyajin(goku,vegeta) ._1 .especie shouldNot be (Saiyajin(SuperSaiyajin(1),false))
+      }
+
+      it("Vegeta intenta convertirse en superSaiyajin. Al hacerlo si ki maximo se multiplica por 5. Su ki sigue igual"){
+        val (vegetaSS1: Guerrero, vegetaSigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegeta,goku)
+        vegetaSS1.especie should be (Saiyajin(SuperSaiyajin(1),true))
+        vegetaSS1.energia should be (vegeta.energia)
+        vegetaSS1.energiaMaxima should be (vegeta.energiaMaxima * 5)
       }
     }
 

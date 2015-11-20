@@ -74,13 +74,10 @@ package object Movimientos {
   case object ConvertirseEnMono extends Movimiento {
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
-      (atacante.especie, atacante.energiaMaxima) match {
-        case (Saiyajin(MonoGigante, _), _) => (atacante, oponente)
-        case (Saiyajin(fase, true), energiaMaxima) if atacante tieneItem FotoDeLaLuna =>
-          val mono = (atacante cambiarEspecieA Saiyajin(MonoGigante)
-                                cambiarEnergiaMaximaA (3 * energiaMaxima)
-                                recuperarEnergiaMaxima)
-          (mono, oponente)
+      atacante.especie match {
+        case Saiyajin(MonoGigante, _) => (atacante, oponente)
+        case Saiyajin(_, tieneCola) if tieneCola && atacante.tieneItem(FotoDeLaLuna) =>
+          (atacante.cambiarEstadoSaiyajin(MonoGigante,tieneCola).recuperarEnergiaMaxima.multiplicarEnergiaMaximaPor(3), oponente)
         case _ => (atacante, oponente)
       }
     }
@@ -89,12 +86,10 @@ package object Movimientos {
   case object ConvertirseEnSuperSaiyajin extends Movimiento {
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
-      (atacante.especie, atacante.energia, atacante.energiaMaxima) match {
-        case (Saiyajin(MonoGigante, _), _, _) => (atacante, oponente)
-        case (Saiyajin(fase, cola), energia, energiaMaxima) if energia > energiaMaxima / 2 =>
-          val superSaiyajin = (atacante cambiarEspecieA Saiyajin(SuperSaiyajin(fase.proximoNivelZ), cola)
-                                        cambiarEnergiaMaximaA (5 * fase.proximoNivelZ * energiaMaxima))
-          (superSaiyajin, oponente)
+      atacante.especie match {
+        case Saiyajin(MonoGigante, _) => (atacante, oponente)
+        case Saiyajin(estado, tieneCola) if atacante.puedeSubirDeNivel() =>
+          (atacante.cambiarEstadoSaiyajin(SuperSaiyajin(1),tieneCola).multiplicarEnergiaMaximaPor(5), oponente)
         case _ => (atacante, oponente)
       }
     }
