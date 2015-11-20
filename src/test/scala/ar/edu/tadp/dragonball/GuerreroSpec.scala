@@ -8,15 +8,16 @@ import org.scalatest.{ShouldMatchers, FunSpec}
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
+  val AtaquesDeYajirobe: List[Movimiento] = List(MuchosGolpesNinja, UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio))
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal,false), Luchando, Ataques)
   val vegeta: Guerrero = Guerrero("vegeta", List(FotoDeLaLuna,SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques ++ List(UsarItem(FotoDeLaLuna)))
   val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, ArmaFilosa), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
   val androide18: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
-  val androide17: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 5000, 1800, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
-  val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
+  val androide17: Guerrero = Guerrero("Androide17", List(ArmaDeFuego, Municion(ArmaDeFuego)), 1800, 5000, Androide, Luchando, Ataques ++ List(Explotar,UsarItem(FotoDeLaLuna)))
+  val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, AtaquesDeYajirobe)
   val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar, Onda(80)))
   val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(digestionCell,List()), Luchando, Ataques ++ List(ComerseAlOponente))
-  val majinBoo: Guerrero = Guerrero("Majin Boo",List(),50000,80000,Monstruo(digestionMajinBoo,List()),Luchando,Ataques ++ List(ComerseAlOponente))
+  val majinBoo: Guerrero = Guerrero("MajinBoo", List(), 2000, 3000, Monstruo(digestionMajinBoo, List()), Luchando, Ataques ++ List(ComerseAlOponente))
   val piccolo: Guerrero = Guerrero("Piccolo", List(), 1000, 1000, Namekusein, Luchando, Ataques)
 
   describe ("Constructor") {
@@ -219,17 +220,31 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
         goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia) should be(MuchosGolpesNinja)
       }
+      it ("aa") {
+        androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia) should be(Onda(150))
+      }
+    }
+
+    describe ("pelearUnRound") {
+      it ("Goku se deja fajar en round, pero vegeta no aprovecha la oportunidad") {
+        val (gokuDespues, vegetaDespues) = goku.pelearUnRound(DejarseFajar)(vegeta)
+        gokuDespues.estado should be(Fajado(1))
+      }
+      it ("El androide18 saca a pasear a Yajirobe") {
+        val (yajirobeDespues, androideDespues) = yajirobe.pelearUnRound(MuchosGolpesNinja)(androide18)
+        yajirobeDespues.energia should be(90) //se hizo 10 a si mismo, y el androide lo ataco con Onda(150)
+      }
     }
 
     describe ("planDeAtaqueContra") {
       it ("Goku para quedar con mas energia durante dos turnos, siempre elige CargarKi") {
-        goku.planDeAtaqueContra(vegeta, 2) (quedarConMasEnergia) should be(List(CargarKi, CargarKi))
+        goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia) should be(List(CargarKi, Onda(150)))
       }
-      it ("A Androide18 para quedar con mas energia frente a trunks le conviene siempre que la traten de cagar a palos, total trunks siempre ataca con energia") {
-        androide18.planDeAtaqueContra(trunks, 3)(quedarConMasEnergia) should be(List(DejarseFajar,DejarseFajar,DejarseFajar))
+      it ("Cell es demasiado groso para piccolo, y de guapo no mas, se deja Fajar 3 turnos seguidos.") {
+        cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia) should be(List(DejarseFajar, DejarseFajar, DejarseFajar))
       }
       it ("Yajirobe ataca a Goku") {
-        yajirobe.planDeAtaqueContra(goku,2)(quedarConMasEnergia) should be(List(Onda(150), CargarKi))
+        yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia) should be(List(UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
       }
     }
   }
