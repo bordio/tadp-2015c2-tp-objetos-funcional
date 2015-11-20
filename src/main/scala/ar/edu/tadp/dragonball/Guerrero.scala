@@ -20,6 +20,8 @@ case class Guerrero(nombre: String,
     copy(estado = nuevoEstado)
   }
 
+  def sosAndroide = especie.equals(Androide)
+
   def actualizarEnergia(variacion: Int) = {
     val guerrero = copy(energia = (energia + variacion).max(0).min(energiaMaxima))
     if (guerrero.energia <= 0) guerrero estas Muerto
@@ -69,8 +71,20 @@ case class Guerrero(nombre: String,
       List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
   }
 
-  def sosAndroide = especie.equals(Androide)
-
+  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
+    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
+      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
+        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
+          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
+          (atacanteProximo.estado, oponenteProximo.estado) match {
+            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
+            case (Muerto, _) => Ganador(oponenteProximo)
+            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
+          }
+        case otro => otro
+      }
+    }
+  }
 }
 
 abstract class Estado
@@ -79,4 +93,7 @@ case object Luchando extends Estado
 case class Fajado(rounds: Int) extends Estado
 case object KO extends Estado
 case object Muerto extends Estado
-case object Reposo extends Estado
+
+trait ResultadoPelea
+case class Ganador(ganador: Guerrero) extends ResultadoPelea
+case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea
