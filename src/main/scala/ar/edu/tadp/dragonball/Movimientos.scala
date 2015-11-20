@@ -50,6 +50,26 @@ package object Movimientos {
     }
   }
 
+  case class UsarItem(item: Item) extends Movimiento {
+    override def movimiento(guerreros: Guerreros) = {
+      val (atacante, oponente) = guerreros
+      (item, oponente.especie, oponente.estado) match {
+        case (ArmaRoma, Androide, _) => (atacante, oponente)
+        case (ArmaRoma, _, _) => (atacante, oponente quedarKOSiEnergiaMenorA300)
+        case (ArmaFilosa, Saiyajin(MonoGigante, _), _) =>
+          (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, cola = false)).cambiarEnergiaA(1).estas(KO))
+        case (ArmaFilosa, Saiyajin(estado, tieneCola), _) if tieneCola =>
+          (atacante, oponente.cambiarEspecieA(Saiyajin(estado, cola = false)).cambiarEnergiaA(1))
+        case (ArmaFilosa, _, _) => (atacante, oponente actualizarEnergia -(atacante.energia / 100))
+        //TODO: Restar una municion del inventario
+        case (ArmaDeFuego, Humano, _) => (atacante, oponente actualizarEnergia -20)
+        case (ArmaDeFuego, Namekusein, KO) => (atacante, oponente actualizarEnergia -10)
+        case (SemillaDelErmitanio, _, _) => (atacante.recuperarEnergiaMaxima.eliminarItem(item), oponente)
+        case (_,_,_) => (atacante, oponente)
+      }
+    }
+  }
+
   trait TipoAtaque
   case object Fisico extends TipoAtaque
   case object Energia extends TipoAtaque

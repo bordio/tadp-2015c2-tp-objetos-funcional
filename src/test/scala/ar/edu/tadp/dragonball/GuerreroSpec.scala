@@ -9,10 +9,10 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama, comerseAlOponente)
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal), Luchando, Ataques)
   val vegeta: Guerrero = Guerrero("vegeta", List(SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques)
-  val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, Arma(Filosa)), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
-  val androide18: Guerrero = Guerrero("Androide18", List(Arma(deFuego(Glock)), Municion(Glock)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar))
+  val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, ArmaFilosa), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
+  val androide18: Guerrero = Guerrero("Androide18", List(ArmaDeFuego, Municion(ArmaDeFuego)), 900, 1800, Androide, Luchando, Ataques ++ List(Explotar))
   val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
-  val androideDebil: Guerrero = Guerrero("Androide16", List(Arma(deFuego(Glock)), Municion(Glock)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar))
+  val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar))
   val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(DigestionCell), Luchando, Ataques)
 
   describe ("Constructor") {

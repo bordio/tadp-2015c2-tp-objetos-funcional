@@ -21,6 +21,8 @@ case class Guerrero(nombre: String,
     else guerrero
   }
 
+  def cambiarEnergiaA(nuevaEnergia: Int) = copy(energia = nuevaEnergia)
+
   def cambiaTuMovimientosPorLosDe(oponente: Guerrero) = {
     copy(movimientos = oponente.movimientos)
   }
@@ -28,6 +30,21 @@ case class Guerrero(nombre: String,
   def agregarMovimientosDe(oponente: Guerrero) = {
     copy(movimientos = movimientos ++ oponente.movimientos)
   }
+
+  def tieneItem(item: Item): Boolean = {
+    item match {
+      case ArmaDeFuego => items.contains(item) && items.contains(Municion(ArmaDeFuego))
+      case _ => items.contains(item)
+    }
+  }
+
+  def eliminarItem(item: Item) = copy(items = items.diff(List(item)))
+
+  def quedarKOSiEnergiaMenorA300 = if (energia < 300) estas(KO) else this
+
+  def recuperarEnergiaMaxima = copy(energia = energiaMaxima)
+
+  def cambiarEspecieA(otraEspecie: Especie) = copy(especie = otraEspecie)
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
     movimientos.maxBy(
