@@ -4,6 +4,7 @@ import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.TiposDeDigestion._
 import org.scalatest.{ShouldMatchers, FunSpec}
+import scala.util.Try
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
@@ -215,16 +216,16 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
 
     describe ("movimientoMasEfectivoContra") {
       it ("Goku elige CargarKi porque lo deja con mas energia") {
-        goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia) should be(CargarKi)
+        goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia).get should be(CargarKi)
       }
       it ("Vegeta elige Onda(150) para quedar con menos energia") {
-        vegeta.movimientoMasEfectivoContra(goku)(quedarConMenosEnergia) should be(Onda(150))
+        vegeta.movimientoMasEfectivoContra(goku)(quedarConMenosEnergia).get should be(Onda(150))
       }
       it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
-        goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia) should be(MuchosGolpesNinja)
+        goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get should be(MuchosGolpesNinja)
       }
       it ("aa") {
-        androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia) should be(Onda(150))
+        androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get should be(Onda(150))
       }
     }
 
@@ -241,13 +242,13 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
 
     describe ("planDeAtaqueContra") {
       it ("Goku para quedar con mas energia durante dos turnos, siempre elige CargarKi") {
-        goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia) should be(List(CargarKi, Onda(150)))
+        goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get should be(List(CargarKi, Onda(150)))
       }
       it ("Cell es demasiado groso para piccolo, y de guapo no mas, se deja Fajar 3 turnos seguidos.") {
-        cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia) should be(List(DejarseFajar, DejarseFajar, DejarseFajar))
+        cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia).get should be(List(DejarseFajar, DejarseFajar, DejarseFajar))
       }
       it ("Yajirobe ataca a Goku") {
-        yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia) should be(List(UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
+        yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia).get should be(List(UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
       }
     }
   }
@@ -269,10 +270,10 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   
   describe ("pelearContra") {
     it ("Yajirobe le gana a Goku") {
-      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia)) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando))) 
+      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia).get) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando))) 
     }
     it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
-      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia)) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
+      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
     }
   }
   

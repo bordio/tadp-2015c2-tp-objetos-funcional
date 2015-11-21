@@ -3,6 +3,8 @@ package ar.edu.tadp.dragonball
 import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
+import ar.edu.tadp.dragonball.Utils._
+import scala.util.Try
 
 case class Guerrero(nombre: String,
                     items: List[Item],
@@ -11,6 +13,7 @@ case class Guerrero(nombre: String,
                     especie: Especie,
                     estado: Estado,
                     movimientosPropios: List[Movimiento]) {
+  
 
   lazy val movimientos: List[Movimiento] = {
     movimientosPropios ++ especie.movimientosEspeciales
@@ -61,10 +64,8 @@ case class Guerrero(nombre: String,
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =
     copy(energiaMaxima = energiaMaxima * multiplicador)
 
-  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
-    movimientos.maxBy(
-      mov => unCriterio(mov(this,oponente))
-    )
+  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
+    movimientos.maxByOptionable( mov => unCriterio(mov(this,oponente)))
   }
   
   def tieneLas7Esferas() = 
@@ -77,17 +78,26 @@ case class Guerrero(nombre: String,
 
   def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
     val (atacante, defensor) = movimiento(this, oponente)
-    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(defensor, atacante).swap
+    defensor.contraAtacar(atacante).swap
   }
-
-  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
-    case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
-    case _ =>
-      val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
-      val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
-      List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
+  
+  def contraAtacar(guerrero: Guerrero): Guerreros = this.atacarSegun(quedarConMasEnergia)(guerrero)
+  
+  def atacarSegun(criterio: Guerreros=>Int): (Guerrero => Guerreros) = guerrero => {
+    val guerreros = (this,guerrero)
+    this.movimientoMasEfectivoContra(guerrero)(criterio).fold(guerreros)(_(guerreros))
   }
-
+  
+  
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) : Try[List[Movimiento]] = Try {
+    val (sinMovimientos, guerreros) = (List(): List[Movimiento], (this,oponente))
+    
+    (1 to cantidadDeRounds).foldLeft(sinMovimientos, guerreros)({
+      case ((plan,(atacante,oponente)),_) => atacante.movimientoMasEfectivoContra(oponente)(unCriterio).fold(throw new Exception)(mov => (plan :+ mov, atacante.pelearUnRound(mov)(oponente)))  
+    })._1
+ 
+  }
+  
   def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
     planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
       (resultadoAnterior, movimientoActual) => resultadoAnterior match {
