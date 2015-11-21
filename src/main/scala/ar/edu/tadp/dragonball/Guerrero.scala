@@ -15,6 +15,8 @@ case class Guerrero(nombre: String,
   lazy val movimientos: List[Movimiento] = {
     movimientosPropios ++ especie.movimientosEspeciales
   }
+  
+  val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
 
   def estas(nuevoEstado: Estado) : Guerrero = {
     copy(estado = nuevoEstado)
@@ -40,7 +42,9 @@ case class Guerrero(nombre: String,
   }
 
   def eliminarItem(item: Item) = copy(items = items.diff(List(item)))
-
+  
+  def eliminarEsferas() = copy(items = items.diff(las7Esferas))
+  
   def recuperarEnergiaMaxima = copy(energia = energiaMaxima)
 
   def cambiarEspecieA(otraEspecie: Especie) = copy(especie = otraEspecie)

@@ -1,4 +1,4 @@
-package ar.edu.tadp.dragonball
+  package ar.edu.tadp.dragonball
 
 import ar.edu.tadp.dragonball.Movimientos._
 

@@ -20,6 +20,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(digestionCell,List()), Luchando, Ataques ++ List(ComerseAlOponente))
   val majinBoo: Guerrero = Guerrero("MajinBoo", List(), 2000, 3000, Monstruo(digestionMajinBoo, List()), Luchando, Ataques ++ List(ComerseAlOponente))
   val piccolo: Guerrero = Guerrero("Piccolo", List(), 1000, 1000, Namekusein, Luchando, Ataques ++ List(Magia(hacertePensar)))
+  val yamcha: Guerrero = Guerrero("Yamcha",List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7)),50,200,Humano,Luchando,Ataques)
 
   describe ("Constructor") {
     it ("Goku should have") {
@@ -250,11 +251,18 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
     }
   }
   
-  describe ("piccolo hace magia") {
+  describe ("Magia") {
      it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
-        val (a, c) = Magia(hacertePensar)(piccolo,goku)
-        c.nombre should be(goku.nombre)
-        c.energia should be(102)
+        val (atacante, oponente) = Magia(hacertePensar)(piccolo,goku)
+        oponente.nombre should be(goku.nombre)
+        oponente.energia should be(102)
       }
+     it ("Yamcha tiene las 7 esferas, por eso puede hacer magia y se queda sin esferas") {
+       val (atacante, oponente) = Magia(hacertePensar)(yamcha,goku)
+        oponente.nombre should be(goku.nombre)
+        oponente.energia should be(102)
+        atacante.tieneLas7Esferas should be (false)
+     }
+     
     }
 }

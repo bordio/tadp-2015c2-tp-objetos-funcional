@@ -118,7 +118,7 @@ package object Movimientos {
       val(atacante, oponente): Guerreros = guerrreros
       atacante.especie match {
        case _:Magico => paseDeMagia(guerrreros)
-       case _ if (atacante.tieneLas7Esferas) => paseDeMagia (atacante, oponente)
+       case _ if (atacante.tieneLas7Esferas) => paseDeMagia (atacante.eliminarEsferas, oponente)
        case _ => guerrreros
      }
    }
