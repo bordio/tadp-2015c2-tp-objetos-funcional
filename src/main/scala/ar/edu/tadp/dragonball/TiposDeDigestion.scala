@@ -10,6 +10,7 @@ package object TiposDeDigestion {
   }
 
   val digestionMajinBoo: TipoDigestion = (guerreros: List[Guerrero]) => {
-    guerreros.last.movimientosPropios
+    val guerrero = guerreros.lastOption
+    if (guerrero.isEmpty) List() else guerrero.get.movimientosPropios
   }
 }

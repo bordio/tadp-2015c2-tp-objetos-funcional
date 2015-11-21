@@ -283,6 +283,10 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
         goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
       }
+      it ("MajinBoo tarda 42 turnos en matar a Vegeta cuando se transforma en Mono") {
+        val (vegetaMono,majinboo) = ConvertirseEnMono (vegeta, majinBoo)
+        vegetaMono.recuperarEnergiaMaxima.pelearContra(majinboo)(vegetaMono.planDeAtaqueContra(majinboo, 42)(quedarConMasEnergia).get) should be(Ganador(majinBoo.cambiarEnergiaA(2950)))
+      }
     }
   }
 }
