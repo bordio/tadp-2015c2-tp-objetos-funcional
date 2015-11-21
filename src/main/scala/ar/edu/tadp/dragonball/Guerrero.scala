@@ -1,143 +1,116 @@
 package ar.edu.tadp.dragonball
 
+import ar.edu.tadp.dragonball.Criterios._
+import ar.edu.tadp.dragonball.Movimientos._
+import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
+
 case class Guerrero(nombre: String,
-                    inventario: List[Item],
+                    items: List[Item],
                     energia: Int,
                     energiaMaxima: Int,
-                    movimientos: List[Movimiento],
                     especie: Especie,
                     estado: Estado,
-                    roundsDejandoseFajar: Int = 0) {
+                    movimientosPropios: List[Movimiento]) {
 
-  def realizarMovimiento(oponente: Guerrero, movimiento: Movimiento) = {
-    if (movimientos.contains(movimiento)) movimiento(this, oponente) else (this, oponente)
+  lazy val movimientos: List[Movimiento] = {
+    movimientosPropios ++ especie.movimientosEspeciales
+  }
+  
+  val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
+
+  def estas(nuevoEstado: Estado) : Guerrero = {
+    copy(estado = nuevoEstado)
   }
 
-  def movimientoMasEfectivoContra(oponente: Guerrero) = {
-    (criterio: Criterio) => {
-      movimientos.maxBy(mov =>
-        criterio.cuantificar(this.realizarMovimiento(oponente, mov)._1, this.realizarMovimiento(oponente, mov)._2))
+  def sosAndroide = especie.equals(Androide)
+
+  def actualizarEnergia(variacion: Int) = {
+    val guerrero = copy(energia = (energia + variacion).max(0).min(energiaMaxima))
+    if (guerrero.energia <= 0) guerrero estas Muerto
+    else guerrero
+  }
+
+  def cambiarEnergiaA(nuevaEnergia: Int) = copy(energia = nuevaEnergia)
+
+  def cambiarEnergiaMaximaA(nuevaEnergia: Int) = copy(energiaMaxima = nuevaEnergia)
+
+  def tieneItem(item: Item): Boolean = {
+    item match {
+      case ArmaDeFuego => items.contains(item) && items.contains(Municion(ArmaDeFuego))
+      case _ => items.contains(item)
     }
   }
 
-  def pelearUnRound(movimiento: Movimiento) = {
-    (oponente: Guerrero) => {
-      val (atacante, defensor) = this.realizarMovimiento(oponente, movimiento)
-      defensor.realizarMovimiento(atacante, defensor.movimientoMasEfectivoContra(this)(new CriterioEnergia))
-    }
+  def eliminarItem(item: Item) = copy(items = items.diff(List(item)))
+  
+  def eliminarEsferas() = copy(items = items.diff(las7Esferas))
+  
+  def recuperarEnergiaMaxima = copy(energia = energiaMaxima)
+
+  def cambiarEspecieA(otraEspecie: Especie) = copy(especie = otraEspecie)
+
+  def cambiarEstadoSaiyajin(nuevoEstado: EstadoSaiyajin, tieneCola:Boolean) : Guerrero = {
+    copy(especie = Saiyajin(nuevoEstado,tieneCola))
   }
 
-  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int) = {
-    (criterio: Criterio) => {
-      var movimientoActual = movimientoMasEfectivoContra(oponente)(criterio)
-      var planDeAtaque = PlanDeAtaque(List(movimientoActual))
-      var atacanteActual = this
-      var oponenteActual = oponente
+  def agregarMovimientos(movimientos_nuevos: List[Movimiento]) =
+    copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
 
-      for (_ <- 1 to cantidadDeRounds) {
-        val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteActual.pelearUnRound(movimientoActual)(oponenteActual)
-        atacanteActual = atacanteProximo
-        oponenteActual = oponenteProximo
-        movimientoActual = atacanteActual.movimientoMasEfectivoContra(oponenteActual)(criterio)
-        planDeAtaque = planDeAtaque.agregarMovimiento(movimientoActual)
-      }
-      planDeAtaque
-    }
-  }
-
-  def pelearContra(oponente: Guerrero) = {
-    (planDeAtaque: PlanDeAtaque) => {
-      planDeAtaque.movimientos.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) { (resultadoAnterior, movimientoActual) =>
-
-        resultadoAnterior match {
-          case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
-            val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
-
-            (atacanteProximo.estado, oponenteProximo.estado) match {
-              case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
-              case (Muerto, _) => Ganador(oponenteProximo)
-              case (_) => SiguenPeleando(atacanteProximo, oponenteProximo)
-            }
-          case otro => otro
-        }
-      }
-    }
-  }
-
-  def aumentarRoundsDejandoseFajar() =
-    copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
-
-  def aumentarEnergia(cantidad: Int) = {
-    val guerrero = copy(energia = energia + cantidad)
-
-    if (guerrero.energia > guerrero.energiaMaxima) {
-      copy(energia = energiaMaxima)
-    } else {
-      guerrero
-    }
-  }
-
-  def reducirEnergia(cantidad: Int) = {
-    val guerrero = copy(energia = energia - cantidad)
-
-    if (guerrero.energia <= 0) {
-      copy(energia = 0).cambiarEstadoA(Muerto)
-    } else {
-      guerrero
-    }
-  }
-
-  def cambiarEnergiaA(cantidad: Int) =
-    copy(energia = cantidad)
-
-  def cambiarEstadoA(unEstado: Estado) = {
-    val guerrero = copy(estado = unEstado)
-    if (estado == SuperSaiyajin && unEstado != SuperSaiyajin) {
-      guerrero.especie match {
-        case Saiyajin(_, tieneCola) =>
-          guerrero.cambiarEspecieA(Saiyajin(0, tieneCola))
-      }
-    } else {
-      guerrero
-    }
-  }
-
-  def quedarKOSiEnergiaMenorA(cantidad: Int) =
-    if (energia < cantidad) cambiarEstadoA(KO) else this
-
-  def recuperarEnergiaMaxima() =
-    copy(energia = energiaMaxima)
+  def puedeSubirDeNivel() = energia >= energiaMaxima / 2
 
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =
     copy(energiaMaxima = energiaMaxima * multiplicador)
 
-  def aumentarEnergiaMaxima(cantidad: Int) =
-    copy(energiaMaxima = energiaMaxima + cantidad)
-
-  def tieneItem(item: Item) =
-
-    item match {
-      case ArmaDeFuego =>
-        inventario.contains(item) && inventario.contains(Municion(item))
-      case _ => inventario.contains(item)
-    }
-
-  def eliminarItem(item: Item) =
-    copy(inventario = inventario.diff(List(item)))
-
-  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion) =
-    copy(movimientos = tipoDigestion.movimientosAlComerA(oponente, movimientos))
-
-  def tieneFotoDeLuna() =
-    inventario.contains(FotoDeLaLuna)
-
-  def puedeSubirDeNivel() =
-    energia >= energiaMaxima / 2
-
-  def cambiarEspecieA(unaEspecie: Especie) =
-    copy(especie = unaEspecie)
-
-  def tieneLas7Esferas() =
+  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Movimiento = {
+    movimientos.maxBy(
+      mov => unCriterio(mov(this,oponente))
+    )
+  }
+  
+  def tieneLas7Esferas() = 
     (1 to 7).forall(estrellas =>
-      inventario.contains(Esfera(estrellas)))
+      items.contains(EsferaDelDragon(estrellas)))
+
+  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
+    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
+  }
+
+  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
+    val (atacante, defensor) = movimiento(this, oponente)
+    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia)(defensor, atacante).swap
+  }
+
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
+    case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
+    case _ =>
+      val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
+      val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
+      List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
+  }
+
+  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
+    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
+      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
+        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
+          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
+          (atacanteProximo.estado, oponenteProximo.estado) match {
+            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
+            case (Muerto, _) => Ganador(oponenteProximo)
+            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
+          }
+        case otro => otro
+      }
+    }
+  }
 }
+
+abstract class Estado
+
+case object Luchando extends Estado
+case class Fajado(rounds: Int) extends Estado
+case object KO extends Estado
+case object Muerto extends Estado
+
+trait ResultadoPelea
+case class Ganador(ganador: Guerrero) extends ResultadoPelea
+case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea
