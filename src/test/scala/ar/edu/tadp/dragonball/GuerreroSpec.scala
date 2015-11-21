@@ -8,6 +8,7 @@ import org.scalatest.{ShouldMatchers, FunSpec}
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
+  def tieneMasEnergia(guerreros: Guerreros) = guerreros._1.energia
   val AtaquesDeYajirobe: List[Movimiento] = List(MuchosGolpesNinja, UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio))
   val hacertePensar: Function1[Guerreros,Guerreros] = { case (atacante,oponente) => (atacante, oponente.actualizarEnergia(2)) }
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal,false), Luchando, Ataques)
@@ -265,4 +266,16 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
      }
      
     }
+  
+  describe ("pelearContra") {
+    it ("Yajirobe le gana a Goku") {
+      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia)) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando))) 
+    }
+    it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
+      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia)) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
+    }
+  }
+  
+  
+  
 }
