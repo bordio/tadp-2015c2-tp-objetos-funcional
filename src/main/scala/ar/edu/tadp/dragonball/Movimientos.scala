@@ -91,7 +91,7 @@ package object Movimientos {
       atacante.especie match {
         case Saiyajin(MonoGigante, _) => (atacante, oponente)
         case Saiyajin(estado, tieneCola) if atacante.puedeSubirDeNivel() =>
-          (atacante.cambiarEstadoSaiyajin(SuperSaiyajin(1),tieneCola).multiplicarEnergiaMaximaPor(5), oponente)
+          (atacante.cambiarEstadoSaiyajin(SuperSaiyajin(estado.proximoNivelZ),tieneCola).multiplicarEnergiaMaximaPor(5), oponente)
         case _ => (atacante, oponente)
       }
     }

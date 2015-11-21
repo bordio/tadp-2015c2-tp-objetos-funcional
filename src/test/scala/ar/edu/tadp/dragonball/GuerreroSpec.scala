@@ -83,12 +83,22 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         ConvertirseEnSuperSaiyajin(goku,vegeta) ._1 .especie shouldNot be (Saiyajin(SuperSaiyajin(1),false))
       }
 
-      it("Vegeta intenta convertirse en superSaiyajin. Al hacerlo si ki maximo se multiplica por 5. Su ki sigue igual"){
+      it("Vegeta intenta convertirse en superSaiyajin. Al hacerlo, su ki maximo se multiplica por 5. Su ki sigue igual"){
         val (vegetaSS1: Guerrero, vegetaSigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegeta,goku)
         vegetaSS1.especie should be (Saiyajin(SuperSaiyajin(1),true))
         vegetaSS1.energia should be (vegeta.energia)
         vegetaSS1.energiaMaxima should be (vegeta.energiaMaxima * 5)
       }
+
+      it("VegetaSS1 se convierte a SS2. Al hacerlo, su ki maximo se multiplica por 5. Su ki sigue igual"){
+        val (vegetaSS1: Guerrero, vegetaSigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegeta,goku)
+        val (vegetaSS2: Guerrero, vegetaSS1SigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegetaSS1.actualizarEnergia(3000),goku)
+        vegetaSS2.especie should be (Saiyajin(SuperSaiyajin(2),true))
+        vegetaSS2.energia should be (vegetaSS1.energia+3000)
+        vegetaSS2.energiaMaxima should be (vegetaSS1.energiaMaxima * 5)
+      }
+
+
     }
 
     describe("Fusionarse"){
@@ -214,6 +224,20 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
     }
 
+    describe ("Magia") {
+      it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
+        val (atacante, oponente) = Magia(hacertePensar)(piccolo,goku)
+        oponente.nombre should be(goku.nombre)
+        oponente.energia should be(102)
+      }
+      it ("Yamcha tiene las 7 esferas, por eso puede hacer magia y se queda sin esferas") {
+        val (atacante, oponente) = Magia(hacertePensar)(yamcha,goku)
+        oponente.nombre should be(goku.nombre)
+        oponente.energia should be(102)
+        atacante.tieneLas7Esferas should be (false)
+      }
+    }
+
     describe ("movimientoMasEfectivoContra") {
       it ("Goku elige CargarKi porque lo deja con mas energia") {
         goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia).get should be(CargarKi)
@@ -224,7 +248,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
         goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get should be(MuchosGolpesNinja)
       }
-      it ("aa") {
+      it ("Androide18 elige Onda(150) para quedar con mas energia") {
         androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get should be(Onda(150))
       }
     }
@@ -251,32 +275,14 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia).get should be(List(UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
       }
     }
-  }
-  
-  describe ("Magia") {
-     it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
-        val (atacante, oponente) = Magia(hacertePensar)(piccolo,goku)
-        oponente.nombre should be(goku.nombre)
-        oponente.energia should be(102)
+
+    describe ("pelearContra") {
+      it ("Yajirobe le gana a Goku") {
+        yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia).get) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando)))
       }
-     it ("Yamcha tiene las 7 esferas, por eso puede hacer magia y se queda sin esferas") {
-       val (atacante, oponente) = Magia(hacertePensar)(yamcha,goku)
-        oponente.nombre should be(goku.nombre)
-        oponente.energia should be(102)
-        atacante.tieneLas7Esferas should be (false)
-     }
-     
-    }
-  
-  describe ("pelearContra") {
-    it ("Yajirobe le gana a Goku") {
-      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia).get) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando))) 
-    }
-    it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
-      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
+      it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
+        goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
+      }
     }
   }
-  
-  
-  
 }
