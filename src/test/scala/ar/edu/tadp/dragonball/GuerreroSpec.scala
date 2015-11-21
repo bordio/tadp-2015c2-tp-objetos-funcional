@@ -1,11 +1,8 @@
 package ar.edu.tadp.dragonball
 
-import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
-import ar.edu.tadp.dragonball.TiposDeDigestion._
-import org.scalatest.{ShouldMatchers, FunSpec}
 import ar.edu.tadp.dragonball.seed._
-import scala.util.Try
+import org.scalatest.{FunSpec, ShouldMatchers}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
@@ -42,48 +39,11 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       it ("Si Goku se deja fajar 3 veces consecutivas, el contador debe contar 3") {
         DejarseFajar (DejarseFajar (DejarseFajar (goku, vegeta))) ._1 .estado should be (Fajado(3))
       }
-    }
-
-    describe ("ConvertirseEnMono"){
-      it("MajinBu intenta convertirse en mono y no puede, al no ser un saiyajin"){
-        ConvertirseEnMono(majinBoo,goku) ._1 .especie shouldNot be (Saiyajin(MonoGigante,true))
+      it ("Si Goku se deja fajar 2 veces consecutivas, luego carga ki, y luego vuelve a dejarse fajar, el contador debe estar en 1") {
+        val estadoActual = DejarseFajar (CargarKi (DejarseFajar (DejarseFajar (goku, vegeta))))
+        estadoActual ._1 .estado should not be Fajado(3)
+        estadoActual ._1 .estado should be (Fajado(1))
       }
-
-      it("Goku intenta convertirse en mono y no puede, no tiene cola"){
-        ConvertirseEnMono(goku,majinBoo) ._1 .especie shouldNot be (Saiyajin(MonoGigante,true))
-      }
-
-      it("Vegeta intenta convertirse en mono y puede, ya que tiene cola y foto de la luna"){
-        ConvertirseEnMono(vegeta,majinBoo) ._1 .especie should be (Saiyajin(MonoGigante,true))
-      }
-    }
-
-    describe("ConvertirseEnSuperSaiyajin"){
-
-      it("MajinBu intenta convertirse en SS y no puede, al no ser un saiyajin"){
-        ConvertirseEnSuperSaiyajin(majinBoo,goku) ._1 .especie shouldNot be (Saiyajin(SuperSaiyajin(1),true))
-      }
-
-      it("Goku intenta convertirse en superSaiyajin. No puede al no alcanzarle su energia"){
-        ConvertirseEnSuperSaiyajin(goku,vegeta) ._1 .especie shouldNot be (Saiyajin(SuperSaiyajin(1),false))
-      }
-
-      it("Vegeta intenta convertirse en superSaiyajin. Al hacerlo, su ki maximo se multiplica por 5. Su ki sigue igual"){
-        val (vegetaSS1: Guerrero, vegetaSigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegeta,goku)
-        vegetaSS1.especie should be (Saiyajin(SuperSaiyajin(1),true))
-        vegetaSS1.energia should be (vegeta.energia)
-        vegetaSS1.energiaMaxima should be (vegeta.energiaMaxima * 5)
-      }
-
-      it("VegetaSS1 se convierte a SS2. Al hacerlo, su ki maximo se multiplica por 5. Su ki sigue igual"){
-        val (vegetaSS1: Guerrero, vegetaSigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegeta,goku)
-        val (vegetaSS2: Guerrero, vegetaSS1SigueIgual: Guerrero) = ConvertirseEnSuperSaiyajin(vegetaSS1.actualizarEnergia(3000),goku)
-        vegetaSS2.especie should be (Saiyajin(SuperSaiyajin(2),true))
-        vegetaSS2.energia should be (vegetaSS1.energia+3000)
-        vegetaSS2.energiaMaxima should be (vegetaSS1.energiaMaxima * 5)
-      }
-
-
     }
 
     describe("Fusionarse"){
@@ -102,113 +62,6 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
     }
 
-    describe("ComerseAlOponente"){
-      it("Majin Boo come a vegeta, luego a goku (quienes deben morir). Y obtiene  solamente los poderes de goku") {
-        val (majinAlimentadoConVegeta: Guerrero, vegetaComido: Guerrero) = ComerseAlOponente(majinBoo,vegeta)
-        val (majinAlimentadoConGoku: Guerrero, gokuComido: Guerrero) = ComerseAlOponente(majinBoo,goku)
-
-        vegetaComido.estado should be (Muerto)
-        gokuComido.estado should be (Muerto)
-        majinAlimentadoConGoku.especie.movimientosEspeciales should be (goku.movimientosPropios)
-        majinAlimentadoConGoku.especie.movimientosEspeciales shouldNot be (vegeta.movimientosPropios)
-      }
-
-      it("Cell come a vegeta, luego a goku (quienes deben morir). Y no absorve sus poderes, ya que no son androides") {
-        val (cellAlimentadoConVegeta: Guerrero, vegetaComido: Guerrero) = ComerseAlOponente(cell,vegeta)
-        val (cellAlimentadoConGokuYVegeta: Guerrero, gokuComido: Guerrero) = ComerseAlOponente(cellAlimentadoConVegeta,goku)
-
-        vegetaComido.estado should be (Muerto)
-        gokuComido.estado should be (Muerto)
-        cellAlimentadoConVegeta.especie.movimientosEspeciales shouldNot be (goku.movimientosPropios)
-        cellAlimentadoConGokuYVegeta.especie.movimientosEspeciales shouldNot be (vegeta.movimientosPropios)
-      }
-
-      it("Cell come a Androide16 y a Androide18 (quienes deben morir). Y absorve sus poderes") {
-        val (cellAlimentadoConAndroide16: Guerrero, androide16Comido: Guerrero) = ComerseAlOponente(cell,androideDebil)
-        val (cellAlimentadoConAndroide16YAndroide18: Guerrero, androide18Comido: Guerrero) = ComerseAlOponente(cellAlimentadoConAndroide16,androide18)
-
-        androide16Comido.estado should be (Muerto)
-        androide18Comido.estado should be (Muerto)
-        cellAlimentadoConAndroide16.especie.movimientosEspeciales should be (androideDebil.movimientosPropios)
-        cellAlimentadoConAndroide16YAndroide18.especie.movimientosEspeciales should be ((androideDebil.movimientosPropios ++ androide18.movimientosPropios).distinct)
-      }
-
-      it("Cell intenta comerse a Androide17, quien tiene mayor ki. Por lo que no logra comerlo") {
-        val (cellSinComer: Guerrero, androide17SigueVivo: Guerrero) = ComerseAlOponente(cell,androide17)
-
-        androide17SigueVivo.estado shouldNot be (Muerto)
-        cellSinComer.especie.movimientosEspeciales shouldNot be (androide17.movimientosPropios)
-      }
-    }
-
-    describe ("MuchosGolpesNinjas") {
-      it ("Yajirobe le pega a androide18 pero se hace daño a si mismo") {
-        MuchosGolpesNinja (yajirobe, androide18) ._1 .energia should be(390)
-      }
-      it ("Yajirobe le pega a androide16 que es más débil que él pero se hace daño a si mismo") {
-        MuchosGolpesNinja (yajirobe, androideDebil) ._1 .energia should be(390)
-      }
-      it ("Yajirobe quiere pegarle a vegeta pero no logra más que hacerse daño a si mismo") {
-        MuchosGolpesNinja (yajirobe, vegeta) ._1 .energia should be(380)
-      }
-    }
-
-    describe ("Onda") {
-      it ("Vegeta le tira un kame hame a yajirobe!") {
-        Onda(150) (vegeta, yajirobe) ._1 .energia should be(350)
-        Onda(150) (vegeta, yajirobe) ._2 .energia should be(100)
-      }
-      it ("Goku trata de tirar un kame hame de 200 pero no tiene energia suficiente") {
-        Onda(200) (goku, vegeta) ._1 .energia should be(100)
-      }
-      it ("Trunks ingenuamente trata de atacar con Kame Hame a androide18, pero lo cura") {
-        Onda(200)(trunks, androide18)._2.energia should be(1300)
-        Onda(200)(trunks, androide18)._1.energia should be(1150)
-      }
-    }
-
-    describe ("Genkidama") {
-      it ("Goku se deja fajar 3 turnos y saca 1000") {
-        val gokuDejandoseFajar = DejarseFajar (DejarseFajar (DejarseFajar (goku, trunks)))
-        Genkidama (gokuDejandoseFajar) ._2 .energia should be(350)
-      }
-      it ("Goku asesina a vegeta con una genkidama en 3 turnos") {
-        val gokuFajado = goku estas Fajado(3)
-        Genkidama (gokuFajado, vegeta) ._2 .estado should be(Muerto)
-      }
-      it ("Goku se ceba queriendo matar a todos con su genkidama, pero al androide lo cura") {
-        val gokuFajado = goku estas Fajado(3)
-        Genkidama (gokuFajado, androideDebil) ._2 .energia should be(300)
-      }
-    }
-
-    describe ("Explotar") {
-      it ("El androide16 es muy debil, y apesar de que explota no logra matar al oponente") {
-        val (androideMuerto, piccoloRePiyo) = Explotar (androideDebil, piccolo)
-         androideMuerto.estado should be(Muerto)
-        piccoloRePiyo.energia should be(600)
-      }
-      it ("El androide18 explota, y mata a yajirobe") {
-        val (androideMuerto, yajirobeMuerto) = Explotar (androide18, yajirobe)
-        androideMuerto.estado should be(Muerto)
-        yajirobeMuerto.estado should be(Muerto)
-      }
-      it ("El androide18 explota, y pero no puede matar al gran Piccolo Daimaku porque es namekuseiano") {
-        val (androideMuerto, piccoloExplotado) = Explotar (androide18, piccolo)
-        androideMuerto.estado should be(Muerto)
-        piccoloExplotado.estado should be(Luchando)
-        piccoloExplotado.energia should be(1)
-      }
-    }
-
-    describe ("Movimientos integrados") {
-      it ("Si Goku se deja fajar 2 veces consecutivas, luego carga ki, y luego vuelve a dejarse fajar, el contador debe estar en 1") {
-        val estadoActual = DejarseFajar (CargarKi (DejarseFajar (DejarseFajar (goku, vegeta))))
-        estadoActual ._1 .estado should not be Fajado(3)
-        estadoActual ._1 .estado should be (Fajado(1))
-      }
-    }
-
     describe ("Magia") {
       it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
         val (atacante, oponente) = Magia(hacertePensar)(piccolo,goku)
@@ -220,57 +73,6 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
         oponente.nombre should be(goku.nombre)
         oponente.energia should be(102)
         atacante.tieneLas7Esferas should be (false)
-      }
-    }
-
-    describe ("movimientoMasEfectivoContra") {
-      it ("Goku elige CargarKi porque lo deja con mas energia") {
-        goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia).get should be(CargarKi)
-      }
-      it ("Vegeta elige Onda(150) para quedar con menos energia") {
-        vegeta.movimientoMasEfectivoContra(goku)(quedarConMenosEnergia).get should be(Onda(150))
-      }
-      it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
-        goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get should be(MuchosGolpesNinja)
-      }
-      it ("Androide18 elige Onda(150) para quedar con mas energia") {
-        androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get should be(Onda(150))
-      }
-    }
-
-    describe ("pelearUnRound") {
-      it ("Goku se deja fajar en round, pero vegeta no aprovecha la oportunidad") {
-        val (gokuDespues, vegetaDespues) = goku.pelearUnRound(DejarseFajar)(vegeta)
-        gokuDespues.estado should be(Fajado(1))
-      }
-      it ("El androide18 saca a pasear a Yajirobe") {
-        val (yajirobeDespues, androideDespues) = yajirobe.pelearUnRound(MuchosGolpesNinja)(androide18)
-        yajirobeDespues.energia should be(90) //se hizo 10 a si mismo, y el androide lo ataco con Onda(150)
-      }
-    }
-
-    describe ("planDeAtaqueContra") {
-      it ("Goku para quedar con mas energia durante dos turnos, siempre elige CargarKi") {
-        goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get should be(List(CargarKi, Onda(150)))
-      }
-      it ("Cell es demasiado groso para piccolo, y de guapo no mas, se deja Fajar 3 turnos seguidos.") {
-        cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia).get should be(List(DejarseFajar, DejarseFajar, DejarseFajar))
-      }
-      it ("Yajirobe ataca a Goku") {
-        yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia).get should be(List(UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
-      }
-    }
-
-    describe ("pelearContra") {
-      it ("Yajirobe le gana a Goku") {
-        yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia).get) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando)))
-      }
-      it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
-        goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
-      }
-      it ("MajinBoo tarda 42 turnos en matar a Vegeta cuando se transforma en Mono") {
-        val (vegetaMono,majinboo) = ConvertirseEnMono (vegeta, majinBoo)
-        vegetaMono.recuperarEnergiaMaxima.pelearContra(majinboo)(vegetaMono.planDeAtaqueContra(majinboo, 42)(quedarConMasEnergia).get) should be(Ganador(majinBoo.cambiarEnergiaA(2950)))
       }
     }
   }
