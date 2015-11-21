@@ -233,7 +233,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
         goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia) should be(MuchosGolpesNinja)
       }
-      it ("aa") {
+      it ("Androide18 elige Onda(150) para quedar con mas energia") {
         androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia) should be(Onda(150))
       }
     }
