@@ -9,6 +9,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
 
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
   val AtaquesDeYajirobe: List[Movimiento] = List(MuchosGolpesNinja, UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio))
+  val hacertePensar: Function1[Guerreros,Guerreros] = { case (atacante,oponente) => (atacante, oponente.actualizarEnergia(2)) }
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal,false), Luchando, Ataques)
   val vegeta: Guerrero = Guerrero("vegeta", List(FotoDeLaLuna,SemillaDelErmitanio), 500, 1000, Saiyajin(Normal), Luchando, Ataques ++ List(UsarItem(FotoDeLaLuna)))
   val trunks: Guerrero = Guerrero("trunks", List(SemillaDelErmitanio, ArmaFilosa), 1350, 2000, Saiyajin(SuperSaiyajin(1), cola = false), Luchando, Ataques)
@@ -18,7 +19,7 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List(Explotar, Onda(80)))
   val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(digestionCell,List()), Luchando, Ataques ++ List(ComerseAlOponente))
   val majinBoo: Guerrero = Guerrero("MajinBoo", List(), 2000, 3000, Monstruo(digestionMajinBoo, List()), Luchando, Ataques ++ List(ComerseAlOponente))
-  val piccolo: Guerrero = Guerrero("Piccolo", List(), 1000, 1000, Namekusein, Luchando, Ataques)
+  val piccolo: Guerrero = Guerrero("Piccolo", List(), 1000, 1000, Namekusein, Luchando, Ataques ++ List(Magia(hacertePensar)))
 
   describe ("Constructor") {
     it ("Goku should have") {
@@ -248,4 +249,12 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
     }
   }
+  
+  describe ("piccolo hace magia") {
+     it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
+        val (a, c) = Magia(hacertePensar)(piccolo,goku)
+        c.nombre should be(goku.nombre)
+        c.energia should be(102)
+      }
+    }
 }

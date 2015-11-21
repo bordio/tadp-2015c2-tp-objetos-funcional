@@ -62,6 +62,10 @@ case class Guerrero(nombre: String,
       mov => unCriterio(mov(this,oponente))
     )
   }
+  
+  def tieneLas7Esferas() = 
+    (1 to 7).forall(estrellas =>
+      items.contains(EsferaDelDragon(estrellas)))
 
   def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
     copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
