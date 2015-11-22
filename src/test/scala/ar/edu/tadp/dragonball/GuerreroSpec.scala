@@ -19,18 +19,18 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
     }
   }
 
-//  describe ("Movimientos") {
-//    describe ("CargarKi") {
-//      it ("Goku (Normal) al usar CargarKi, se le debe incrementar a 200 su energia") {
-//        CargarKi (goku, vegeta) ._1 .energia should be (200)
-//      }
-//      it ("Trunks (SuperSaiyajin nivel 1) al usar CargarKi, se le debe incrementar a 1500 (1350 + 1*150) su energia") {
-//        CargarKi (trunks, goku) ._1 .energia should be (1500)
-//      }
-//      it ("Androide18 al usar CargarKi no debe tener ningun efecto por ser Androide") {
-//        CargarKi (androide18, trunks) ._1 .energia should be (900)
-//      }
-//    }
+  describe ("Movimientos") {
+    describe ("CargarKi") {
+      it ("Goku (Normal) al usar CargarKi, se le debe incrementar a 200 su energia") {
+        goku.CargarEnergia(vegeta)._1 .energia should be (200)
+      }
+      it ("Trunks (SuperSaiyajin nivel 1) al usar CargarKi, se le debe incrementar a 1500 (1350 + 1*150) su energia") {
+        trunks.CargarEnergia(goku) ._1 .energia should be (1500)
+      }
+      it ("Androide18 al usar CargarKi no debe tener ningun efecto por ser Androide") {
+        androide18.CargarEnergia(trunks) ._1 .energia should be (900)
+      }
+    }
 
     describe ("DejarseFajar") {
       it ("Goku al DejarseFajar, el contador de rounds dejandose fajar debe estar en 1") {
@@ -75,5 +75,5 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
 //        atacante.tieneLas7Esferas should be (false)
 //      }
 //    }
-//  }
+  }
 }

@@ -15,11 +15,12 @@ case class Guerrero(nombre: String,
                     movimientosPropios: List[Movimiento]) {
 
 
-  val movimientos: List[(Guerrero) => (Guerrero, Guerrero)] = {
+  val movimientos: List[(Guerrero) => Guerreros] = {
     movimientosPropios.map(mov => mov(this))// ++ especie.movimientosEspeciales.map(mov => mov(this))
   }
 
   val DejarseFajarPor = DejarseFajar(this)(_)
+  val CargarEnergia = CargarKi(this)(_)
 
   val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
 

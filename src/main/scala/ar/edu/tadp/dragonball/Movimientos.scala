@@ -4,11 +4,19 @@ package object Movimientos {
   type Guerreros = (Guerrero, Guerrero)
   type Movimiento = (Guerrero) => (Guerrero) => (Guerrero, Guerrero)
 
-  def DejarseFajar(atacante: Guerrero)(oponente: Guerrero): (Guerrero, Guerrero) = {
+  def DejarseFajar(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
     atacante.estado match {
       case Luchando => (atacante estas Fajado(1), oponente)
       case Fajado(rounds) => (atacante estas Fajado(rounds + 1), oponente)
       case _ => (atacante, oponente)
+    }
+  }
+
+  def CargarKi(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+    atacante.especie match {
+      case Saiyajin(SuperSaiyajin(nivel), _) => (atacante actualizarEnergia (150 * nivel), oponente)
+      case Androide => (atacante, oponente)
+      case _ => (atacante actualizarEnergia 100, oponente)
     }
   }
 
@@ -27,16 +35,6 @@ package object Movimientos {
     }
   }
 
-  case object CargarKi extends MovimientoDeprecated {
-    override def movimiento(guerreros: Guerreros) = {
-      val (atacante, oponente) = guerreros
-      atacante.especie match {
-        case Saiyajin(SuperSaiyajin(nivel), _) => (atacante actualizarEnergia (150 * nivel), oponente)
-        case Androide => guerreros
-        case _ => (atacante actualizarEnergia 100, oponente)
-      }
-    }
-  }
 
 //  case object ComerseAlOponente extends MovimientoDeprecated {
 //    override def movimiento(guerreros: Guerreros) = {
