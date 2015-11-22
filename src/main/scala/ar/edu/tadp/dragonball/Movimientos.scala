@@ -2,7 +2,7 @@ package ar.edu.tadp.dragonball
 
 package object Movimientos {
   type Guerreros = (Guerrero, Guerrero)
-  type Movimiento = (Guerrero) => (Guerrero) => (Guerrero, Guerrero)
+  type Movimiento = (Guerrero) => (Guerrero) => Guerreros
 
   def DejarseFajar(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
     atacante.estado match {
@@ -17,6 +17,14 @@ package object Movimientos {
       case Saiyajin(SuperSaiyajin(nivel), _) => (atacante estas Luchando actualizarEnergia (150 * nivel), oponente)
       case Androide => (atacante estas Luchando, oponente)
       case _ => (atacante estas Luchando actualizarEnergia 100, oponente)
+    }
+  }
+
+  def MuchosGolpesNinja(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+    val (atacante, oponente) = (ejecutante estas Luchando, defensor)
+    (atacante.especie, oponente.especie) match {
+      case (Humano, Androide) => (atacante actualizarEnergia -10, oponente)
+      case _ => if (atacante.energia >= oponente.energia) (atacante, oponente actualizarEnergia -20) else (atacante actualizarEnergia -20, oponente)
     }
   }
 
@@ -119,7 +127,6 @@ package object Movimientos {
    }
   }
 
-
   trait TipoAtaque
   case object Fisico extends TipoAtaque
   case object Energia extends TipoAtaque
@@ -136,14 +143,7 @@ package object Movimientos {
     }
   }
 
-  case object MuchosGolpesNinja extends Ataque(Fisico) {
-    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
-      (atacante.especie, oponente.especie) match {
-        case (Humano, Androide) => (-10, 0)
-        case _ => if (atacante.energia >= oponente.energia) (0,-20) else (-20,0)
-      }
-    }
-  }
+
 
 //  case object Explotar extends Ataque(Fisico) {
 //    override def ataque(atacante: Guerrero, oponente: Guerrero) = {

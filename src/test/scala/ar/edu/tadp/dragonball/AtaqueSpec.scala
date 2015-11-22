@@ -5,18 +5,19 @@ import ar.edu.tadp.dragonball.seed._
 import org.scalatest._
 
 class AtaqueSpec extends FunSpec with ShouldMatchers {
-//  describe("Ataques fisico") {
-//    describe ("MuchosGolpesNinjas") {
-//      it ("Yajirobe le pega a androide18 pero se hace daño a si mismo") {
-//        MuchosGolpesNinja (yajirobe, androide18) ._1 .energia should be(390)
-//      }
-//      it ("Yajirobe le pega a androide16 que es más débil que él pero se hace daño a si mismo") {
-//        MuchosGolpesNinja (yajirobe, androideDebil) ._1 .energia should be(390)
-//      }
-//      it ("Yajirobe quiere pegarle a vegeta pero no logra más que hacerse daño a si mismo") {
-//        MuchosGolpesNinja (yajirobe, vegeta) ._1 .energia should be(380)
-//      }
-//    }
+  describe("Ataques fisico") {
+    describe("MuchosGolpesNinjas") {
+      it("Yajirobe le pega a androide18 pero se hace daño a si mismo") {
+        yajirobe.MuchosGolpesNinjasA(androide18)._1.energia should be(390)
+      }
+      it("Yajirobe le pega a androide16 que es más débil que él pero se hace daño a si mismo") {
+        yajirobe.MuchosGolpesNinjasA(androideDebil)._1.energia should be(390)
+      }
+      it("Yajirobe quiere pegarle a vegeta pero no logra más que hacerse daño a si mismo") {
+        yajirobe.MuchosGolpesNinjasA(vegeta)._1.energia should be(380)
+      }
+    }
+  }
 
 //    describe ("Explotar") {
 //      it ("El androide16 es muy debil, y apesar de que explota no logra matar al oponente") {
