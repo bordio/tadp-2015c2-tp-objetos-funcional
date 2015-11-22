@@ -38,20 +38,21 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
     }
   }
 
-//  describe("Ataques con energia") {
-//    describe ("Onda") {
-//      it ("Vegeta le tira un kame hame a yajirobe!") {
-//        Onda(150) (vegeta, yajirobe) ._1 .energia should be(350)
-//        Onda(150) (vegeta, yajirobe) ._2 .energia should be(100)
-//      }
-//      it ("Goku trata de tirar un kame hame de 200 pero no tiene energia suficiente") {
-//        Onda(200) (goku, vegeta) ._1 .energia should be(100)
-//      }
-//      it ("Trunks ingenuamente trata de atacar con Kame Hame a androide18, pero lo cura") {
-//        Onda(200)(trunks, androide18)._2.energia should be(1300)
-//        Onda(200)(trunks, androide18)._1.energia should be(1150)
-//      }
-//    }
+  describe("Ataques con energia") {
+    describe("Onda") {
+      it("Vegeta le tira un kame hame a yajirobe!") {
+        vegeta.KameHame(150)(yajirobe)._1.energia should be(350)
+        vegeta.KameHame(150)(yajirobe)._2.energia should be(100)
+      }
+      it("Goku trata de tirar un kame hame de 200 pero no tiene energia suficiente") {
+        goku.KameHame(200)(vegeta)._1.energia should be(100)
+      }
+      it("Trunks ingenuamente trata de atacar con Kame Hame a androide18, pero lo cura") {
+        trunks.KameHame(200)(androide18)._2.energia should be(1300)
+        trunks.KameHame(200)(androide18)._1.energia should be(1150)
+      }
+    }
+  }
 
 //    describe ("Genkidama") {
 //      it ("Goku se deja fajar 3 turnos y saca 1000") {

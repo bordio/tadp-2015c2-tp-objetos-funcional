@@ -45,6 +45,16 @@ package object Movimientos {
     }
   }
 
+  def Onda(energiaNecesaria: Int)(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+    val (atacante, oponente) = (ejecutante estas Luchando, defensor)
+    if (atacante.energia < energiaNecesaria) (atacante, oponente)
+    else oponente.especie match {
+//      case Monstruo(_,_) => (-energiaNecesaria, -(energiaNecesaria / 2))
+      case Androide => (atacante actualizarEnergia -energiaNecesaria, oponente actualizarEnergia Math.abs(energiaNecesaria * 2))
+      case _ => (atacante actualizarEnergia -energiaNecesaria, oponente actualizarEnergia -(energiaNecesaria * 2))
+    }
+  }
+
   abstract class MovimientoDeprecated {
     def movimiento(guerreros: Guerreros): Guerreros
     def apply(guerreros: Guerreros) = {

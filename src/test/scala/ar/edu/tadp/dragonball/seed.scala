@@ -4,7 +4,7 @@ import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.TiposDeDigestion._
 
 package object seed {
-  val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja)//, Onda(150), Genkidama)
+  val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150))//, Genkidama)
   def tieneMasEnergia(guerreros: Guerreros) = guerreros._1.energia
   //val AtaquesDeYajirobe: List[Movimiento] = List(MuchosGolpesNinja, UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio))
   val hacertePensar: Function1[Guerreros,Guerreros] = { case (atacante,oponente) => (atacante, oponente.actualizarEnergia(2)) }
