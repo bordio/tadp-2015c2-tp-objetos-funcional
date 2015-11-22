@@ -55,6 +55,19 @@ package object Movimientos {
     }
   }
 
+  def Genkidama(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+    def calcularDanio(estado: Estado): Int = {
+      estado match {
+        case Fajado(rounds) => -Math.pow(10, rounds).toInt
+        case _ => -10
+      }
+    }
+    (atacante.estado, oponente.especie) match {
+      case (_, Androide) => (atacante estas Luchando, oponente actualizarEnergia Math.abs(calcularDanio(atacante.estado)))
+      case (_,_) => (atacante estas Luchando, oponente actualizarEnergia calcularDanio(atacante.estado))
+    }
+  }
+
   abstract class MovimientoDeprecated {
     def movimiento(guerreros: Guerreros): Guerreros
     def apply(guerreros: Guerreros) = {
@@ -153,41 +166,4 @@ package object Movimientos {
 //     }
 //   }
 //  }
-
-//  trait TipoAtaque
-//  case object Fisico extends TipoAtaque
-//  case object Energia extends TipoAtaque
-//
-//  abstract class Ataque(tipoAtaque: TipoAtaque) extends MovimientoDeprecated {
-//    def ataque(atacante: Guerrero, oponente: Guerrero): (Int, Int)
-//    override def movimiento(guerreros: Guerreros) = {
-//      val (atacante, oponente) = guerreros
-//      val (danioAtacante, danioOponente) = ataque(atacante, oponente)
-//      (oponente.especie,tipoAtaque) match {
-//        case (Androide, Energia) => (atacante actualizarEnergia danioAtacante, oponente actualizarEnergia Math.abs(danioOponente))
-//        case _ => (atacante actualizarEnergia danioAtacante, oponente actualizarEnergia danioOponente)
-//      }
-//    }
-//  }
-
-//
-//  case class Onda(energiaNecesaria: Int) extends Ataque(Energia) {
-//    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
-//      if (atacante.energia < energiaNecesaria) (0,0)
-//      else oponente.especie match {
-//        case Monstruo(_,_) => (-energiaNecesaria, -(energiaNecesaria / 2))
-//        case _ => (-energiaNecesaria, -(energiaNecesaria * 2))
-//      }
-//    }
-//  }
-//
-//  case object Genkidama extends Ataque(Energia) {
-//    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
-//      atacante.estado match {
-//        case Fajado(rounds) => (0, -Math.pow(10, rounds).toInt)
-//        case _ => (0, -10)
-//      }
-//    }
-//  }
-
 }

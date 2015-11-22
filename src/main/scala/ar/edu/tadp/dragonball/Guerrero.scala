@@ -24,6 +24,7 @@ case class Guerrero(nombre: String,
   val MuchosGolpesNinjasA = MuchosGolpesNinja(this)_
   val InmolarseContra = Explotar(this)_
   def KameHame(poder:Int) = Onda(poder)(this)_
+  val LanzarGenkidamaContra = Genkidama(this)_
 
   def Matate = this actualizarEnergia -this.energia
 

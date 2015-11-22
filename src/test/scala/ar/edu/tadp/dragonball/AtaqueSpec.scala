@@ -52,21 +52,20 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
         trunks.KameHame(200)(androide18)._1.energia should be(1150)
       }
     }
-  }
 
-//    describe ("Genkidama") {
-//      it ("Goku se deja fajar 3 turnos y saca 1000") {
-//        val gokuDejandoseFajar = DejarseFajar (DejarseFajar (DejarseFajar (goku, trunks)))
-//        Genkidama (gokuDejandoseFajar) ._2 .energia should be(350)
-//      }
-//      it ("Goku asesina a vegeta con una genkidama en 3 turnos") {
-//        val gokuFajado = goku estas Fajado(3)
-//        Genkidama (gokuFajado, vegeta) ._2 .estado should be(Muerto)
-//      }
-//      it ("Goku se ceba queriendo matar a todos con su genkidama, pero al androide lo cura") {
-//        val gokuFajado = goku estas Fajado(3)
-//        Genkidama (gokuFajado, androideDebil) ._2 .energia should be(300)
-//      }
-//    }
-//  }
+    describe ("Genkidama") {
+      it ("Goku se deja fajar 3 turnos y saca 1000") {
+        val gokuDejandoseFajar = goku estas Fajado(3)
+        gokuDejandoseFajar.LanzarGenkidamaContra(trunks) ._2 .energia should be(350)
+      }
+      it ("Goku asesina a vegeta con una genkidama en 3 turnos") {
+        val gokuFajado = goku estas Fajado(3)
+        gokuFajado.LanzarGenkidamaContra(vegeta) ._2 .estado should be(Muerto)
+      }
+      it ("Goku se ceba queriendo matar a todos con su genkidama, pero al androide lo cura") {
+        val gokuFajado = goku estas Fajado(3)
+        gokuFajado.LanzarGenkidamaContra(androideDebil) ._2 .energia should be(300)
+      }
+    }
+  }
 }
