@@ -2,8 +2,17 @@ package ar.edu.tadp.dragonball
 
 package object Movimientos {
   type Guerreros = (Guerrero, Guerrero)
+  type Movimiento = (Guerrero) => (Guerrero) => (Guerrero, Guerrero)
 
-  abstract class Movimiento {
+  def DejarseFajar(atacante: Guerrero)(oponente: Guerrero): (Guerrero, Guerrero) = {
+    atacante.estado match {
+      case Luchando => (atacante estas Fajado(1), oponente)
+      case Fajado(rounds) => (atacante estas Fajado(rounds + 1), oponente)
+      case _ => (atacante, oponente)
+    }
+  }
+
+  abstract class MovimientoDeprecated {
     def movimiento(guerreros: Guerreros): Guerreros
     def apply(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
@@ -12,25 +21,13 @@ package object Movimientos {
         case (KO, UsarItem(SemillaDelErmitanio)) => movimiento(guerreros)
         case (KO, _) => guerreros
         case (Luchando, _) => movimiento(guerreros)
-        case (Fajado(_), DejarseFajar) => movimiento(guerreros)
-        case (Fajado(_), Genkidama) => movimiento(guerreros)
+//        case (Fajado(_), Genkidama) => movimiento(guerreros)
         case (Fajado(_), _) => movimiento(atacante estas Luchando, oponente)
       }
     }
   }
 
-  case object DejarseFajar extends Movimiento {
-    override def movimiento(guerreros: Guerreros) = {
-      val (atacante, oponente) = guerreros
-      atacante.estado match {
-        case Luchando => (atacante estas Fajado(1), oponente)
-        case Fajado(rounds) => (atacante estas Fajado(rounds + 1), oponente)
-        case _ => guerreros
-      }
-    }
-  }
-
-  case object CargarKi extends Movimiento {
+  case object CargarKi extends MovimientoDeprecated {
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
       atacante.especie match {
@@ -41,18 +38,18 @@ package object Movimientos {
     }
   }
 
-  case object ComerseAlOponente extends Movimiento {
-    override def movimiento(guerreros: Guerreros) = {
-      val (atacante, oponente) = guerreros
-      atacante.especie match {
-        case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
-          (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente.estas(Muerto))
-        case _ => guerreros
-      }
-    }
-  }
+//  case object ComerseAlOponente extends MovimientoDeprecated {
+//    override def movimiento(guerreros: Guerreros) = {
+//      val (atacante, oponente) = guerreros
+//      atacante.especie match {
+//        case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
+//          (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente.estas(Muerto))
+//        case _ => guerreros
+//      }
+//    }
+//  }
 
-  case class UsarItem(item: Item) extends Movimiento {
+  case class UsarItem(item: Item) extends MovimientoDeprecated {
     def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.estas(KO) else guerrero
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
@@ -73,7 +70,7 @@ package object Movimientos {
     }
   }
 
-  case object ConvertirseEnMono extends Movimiento {
+  case object ConvertirseEnMono extends MovimientoDeprecated {
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
       atacante.especie match {
@@ -85,7 +82,7 @@ package object Movimientos {
     }
   }
 
-  case object ConvertirseEnSuperSaiyajin extends Movimiento {
+  case object ConvertirseEnSuperSaiyajin extends MovimientoDeprecated {
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
       atacante.especie match {
@@ -97,23 +94,23 @@ package object Movimientos {
     }
   }
 
-  case class Fusionarse(guerreroParaFusionar: Guerrero) extends Movimiento  {
-    override def movimiento(guerreros: Guerreros) = {
-      val (amigo, oponente) = guerreros
-      (amigo.especie, guerreroParaFusionar.especie) match {
-        case (_:Fusionable, _:Fusionable) =>
-          val nuevoGuerrero: Guerrero =
-            guerreroParaFusionar.cambiarEnergiaMaximaA(amigo.energiaMaxima + amigo.energiaMaxima)
-              .cambiarEnergiaA(amigo.energia + guerreroParaFusionar.energia)
-              .agregarMovimientos(amigo.movimientosPropios)
-              .cambiarEspecieA(Fusion)
-          (nuevoGuerrero, oponente)
-        case _ => (guerreroParaFusionar, amigo)
-      }
-    }
-  }
-  
-  case class Magia(paseDeMagia: Guerreros => Guerreros) extends Movimiento {
+//  case class Fusionarse(guerreroParaFusionar: Guerrero) extends MovimientoDeprecated  {
+//    override def movimiento(guerreros: Guerreros) = {
+//      val (amigo, oponente) = guerreros
+//      (amigo.especie, guerreroParaFusionar.especie) match {
+//        case (_:Fusionable, _:Fusionable) =>
+//          val nuevoGuerrero: Guerrero =
+//            guerreroParaFusionar.cambiarEnergiaMaximaA(amigo.energiaMaxima + amigo.energiaMaxima)
+//              .cambiarEnergiaA(amigo.energia + guerreroParaFusionar.energia)
+//              .agregarMovimientos(amigo.movimientosPropios)
+//              .cambiarEspecieA(Fusion)
+//          (nuevoGuerrero, oponente)
+//        case _ => (guerreroParaFusionar, amigo)
+//      }
+//    }
+//  }
+
+  case class Magia(paseDeMagia: Guerreros => Guerreros) extends MovimientoDeprecated {
     override def movimiento(guerrreros: Guerreros) = {
       val(atacante, oponente): Guerreros = guerrreros
       atacante.especie match {
@@ -129,7 +126,7 @@ package object Movimientos {
   case object Fisico extends TipoAtaque
   case object Energia extends TipoAtaque
 
-  abstract class Ataque(tipoAtaque: TipoAtaque) extends Movimiento {
+  abstract class Ataque(tipoAtaque: TipoAtaque) extends MovimientoDeprecated {
     def ataque(atacante: Guerrero, oponente: Guerrero): (Int, Int)
     override def movimiento(guerreros: Guerreros) = {
       val (atacante, oponente) = guerreros
@@ -150,46 +147,46 @@ package object Movimientos {
     }
   }
 
-  case object Explotar extends Ataque(Fisico) {
-    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
-      atacante.especie match {
-        case Androide | Monstruo(_,_) => explotar(atacante, oponente)
-        case _ => (0, 0)
-      }
-    }
-
-    def explotar(atacante: Guerrero, oponente: Guerrero) = {
-      val factor = atacante.especie match {
-        case Androide => 3
-        case _ => 2
-      }
-      val danioRecibido = oponente.energia - atacante.energia*factor
-      oponente.especie match {
-        case Namekusein =>
-          if (danioRecibido <= 0) (-atacante.energia,-(oponente.energia-1))
-          else (-atacante.energia, -Math.abs(danioRecibido))
-        case _ => (-atacante.energia, -Math.abs(danioRecibido))
-      }
-    }
-  }
-
-  case class Onda(energiaNecesaria: Int) extends Ataque(Energia) {
-    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
-      if (atacante.energia < energiaNecesaria) (0,0)
-      else oponente.especie match {
-        case Monstruo(_,_) => (-energiaNecesaria, -(energiaNecesaria / 2))
-        case _ => (-energiaNecesaria, -(energiaNecesaria * 2))
-      }
-    }
-  }
-
-  case object Genkidama extends Ataque(Energia) {
-    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
-      atacante.estado match {
-        case Fajado(rounds) => (0, -Math.pow(10, rounds).toInt)
-        case _ => (0, -10)
-      }
-    }
-  }
+//  case object Explotar extends Ataque(Fisico) {
+//    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
+//      atacante.especie match {
+//        case Androide | Monstruo(_,_) => explotar(atacante, oponente)
+//        case _ => (0, 0)
+//      }
+//    }
+//
+//    def explotar(atacante: Guerrero, oponente: Guerrero) = {
+//      val factor = atacante.especie match {
+//        case Androide => 3
+//        case _ => 2
+//      }
+//      val danioRecibido = oponente.energia - atacante.energia*factor
+//      oponente.especie match {
+//        case Namekusein =>
+//          if (danioRecibido <= 0) (-atacante.energia,-(oponente.energia-1))
+//          else (-atacante.energia, -Math.abs(danioRecibido))
+//        case _ => (-atacante.energia, -Math.abs(danioRecibido))
+//      }
+//    }
+//  }
+//
+//  case class Onda(energiaNecesaria: Int) extends Ataque(Energia) {
+//    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
+//      if (atacante.energia < energiaNecesaria) (0,0)
+//      else oponente.especie match {
+//        case Monstruo(_,_) => (-energiaNecesaria, -(energiaNecesaria / 2))
+//        case _ => (-energiaNecesaria, -(energiaNecesaria * 2))
+//      }
+//    }
+//  }
+//
+//  case object Genkidama extends Ataque(Energia) {
+//    override def ataque(atacante: Guerrero, oponente: Guerrero) = {
+//      atacante.estado match {
+//        case Fajado(rounds) => (0, -Math.pow(10, rounds).toInt)
+//        case _ => (0, -10)
+//      }
+//    }
+//  }
 
 }

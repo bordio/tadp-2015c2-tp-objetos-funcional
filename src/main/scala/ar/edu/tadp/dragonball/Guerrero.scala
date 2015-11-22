@@ -2,7 +2,7 @@ package ar.edu.tadp.dragonball
 
 import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
-import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
+//import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 import ar.edu.tadp.dragonball.Utils._
 import scala.util.Try
 
@@ -13,11 +13,13 @@ case class Guerrero(nombre: String,
                     especie: Especie,
                     estado: Estado,
                     movimientosPropios: List[Movimiento]) {
-  
 
-  lazy val movimientos: List[Movimiento] = {
-    movimientosPropios ++ especie.movimientosEspeciales
+
+  val movimientos: List[(Guerrero) => (Guerrero, Guerrero)] = {
+    movimientosPropios.map(mov => mov(this))// ++ especie.movimientosEspeciales.map(mov => mov(this))
   }
+
+  val DejarseFajarPor = DejarseFajar(this)(_)
 
   val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
 
@@ -56,62 +58,62 @@ case class Guerrero(nombre: String,
     copy(especie = Saiyajin(nuevoEstado,tieneCola))
   }
 
-  def agregarMovimientos(movimientos_nuevos: List[Movimiento]) =
-    copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
+//  def agregarMovimientos(movimientos_nuevos: List[MovimientoDeprecated]) =
+//    copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
 
   def puedeSubirDeNivel() = energia >= energiaMaxima / 2
 
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =
     copy(energiaMaxima = energiaMaxima * multiplicador)
 
-  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
-    movimientos.maxByOptionable( mov => unCriterio(mov(this,oponente)))
-  }
-  
-  def tieneLas7Esferas() = 
+//  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[MovimientoDeprecated] = {
+//    movimientos.maxByOptionable( mov => unCriterio(mov(this,oponente)))
+//  }
+
+  def tieneLas7Esferas() =
     (1 to 7).forall(estrellas =>
       items.contains(EsferaDelDragon(estrellas)))
 
-  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
-    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
-  }
+//  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
+//    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
+//  }
 
-  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
-    val (atacante, defensor) = movimiento(this, oponente)
-    defensor.contraAtacar(atacante).swap
-  }
-  
-  def contraAtacar(guerrero: Guerrero): Guerreros = this.atacarSegun(quedarConMasEnergia)(guerrero)
-  
-  def atacarSegun(criterio: Guerreros=>Int): (Guerrero => Guerreros) = guerrero => {
-    val guerreros = (this,guerrero)
-    this.movimientoMasEfectivoContra(guerrero)(criterio).fold(guerreros)(_(guerreros))
-  }
-  
-  
-  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) : Try[List[Movimiento]] = Try {
-    val (sinMovimientos, guerreros) = (List(): List[Movimiento], (this,oponente))
-    
-    (1 to cantidadDeRounds).foldLeft(sinMovimientos, guerreros)({
-      case ((plan,(atacante,oponente)),_) => atacante.movimientoMasEfectivoContra(oponente)(unCriterio).fold(throw new Exception)(mov => (plan :+ mov, atacante.pelearUnRound(mov)(oponente)))  
-    })._1
- 
-  }
-  
-  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
-    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
-      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
-        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
-          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
-          (atacanteProximo.estado, oponenteProximo.estado) match {
-            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
-            case (Muerto, _) => Ganador(oponenteProximo)
-            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
-          }
-        case otro => otro
-      }
-    }
-  }
+//  def pelearUnRound(movimiento: MovimientoDeprecated)(oponente: Guerrero): Guerreros = {
+//    val (atacante, defensor) = movimiento(this, oponente)
+//    defensor.contraAtacar(atacante).swap
+//  }
+//
+//  def contraAtacar(guerrero: Guerrero): Guerreros = this.atacarSegun(quedarConMasEnergia)(guerrero)
+//
+//  def atacarSegun(criterio: Guerreros=>Int): (Guerrero => Guerreros) = guerrero => {
+//    val guerreros = (this,guerrero)
+//    this.movimientoMasEfectivoContra(guerrero)(criterio).fold(guerreros)(_(guerreros))
+//  }
+//
+//
+//  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) : Try[List[MovimientoDeprecated]] = Try {
+//    val (sinMovimientos, guerreros) = (List(): List[MovimientoDeprecated], (this,oponente))
+//
+//    (1 to cantidadDeRounds).foldLeft(sinMovimientos, guerreros)({
+//      case ((plan,(atacante,oponente)),_) => atacante.movimientoMasEfectivoContra(oponente)(unCriterio).fold(throw new Exception)(mov => (plan :+ mov, atacante.pelearUnRound(mov)(oponente)))
+//    })._1
+//
+//  }
+//
+//  def pelearContra(oponente: Guerrero)(planDeAtaque: List[MovimientoDeprecated]) = {
+//    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
+//      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
+//        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
+//          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
+//          (atacanteProximo.estado, oponenteProximo.estado) match {
+//            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
+//            case (Muerto, _) => Ganador(oponenteProximo)
+//            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
+//          }
+//        case otro => otro
+//      }
+//    }
+//  }
 }
 
 abstract class Estado
