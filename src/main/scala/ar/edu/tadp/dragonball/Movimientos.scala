@@ -14,9 +14,9 @@ package object Movimientos {
 
   def CargarKi(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
     atacante.especie match {
-      case Saiyajin(SuperSaiyajin(nivel), _) => (atacante actualizarEnergia (150 * nivel), oponente)
-      case Androide => (atacante, oponente)
-      case _ => (atacante actualizarEnergia 100, oponente)
+      case Saiyajin(SuperSaiyajin(nivel), _) => (atacante estas Luchando actualizarEnergia (150 * nivel), oponente)
+      case Androide => (atacante estas Luchando, oponente)
+      case _ => (atacante estas Luchando actualizarEnergia 100, oponente)
     }
   }
 

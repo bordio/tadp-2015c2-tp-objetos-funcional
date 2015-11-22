@@ -6,18 +6,18 @@ import org.scalatest.{FunSpec, ShouldMatchers}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
-  describe ("Constructor") {
-    it ("Goku should have") {
-      goku should have(
-        'nombre ("goku"),
-        'energia (100),
-        'energiaMaxima (1000),
-        'especie (Saiyajin(Normal,false)),
-        'estado (Luchando),
-        'movimientos (Ataques)
-      )
-    }
-  }
+//  describe ("Constructor") {
+//    it ("Goku should have") {
+//      goku should have(
+//        'nombre ("goku"),
+//        'energia (100),
+//        'energiaMaxima (1000),
+//        'especie (Saiyajin(Normal,false)),
+//        'estado (Luchando),
+//        'movimientos (Ataques)
+//      )
+//    }
+//  }
 
   describe ("Movimientos") {
     describe ("CargarKi") {
@@ -39,11 +39,11 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       it ("Si Goku se deja fajar 2 veces consecutivas, el contador debe contar 2") {
         goku.DejarseFajarPor(vegeta)._1.DejarseFajarPor(vegeta)._1.estado should be (Fajado(2))
       }
-//      it ("Si Goku se deja fajar 2 veces consecutivas, luego carga ki, y luego vuelve a dejarse fajar, el contador debe estar en 1") {
-//        val estadoActual = DejarseFajar (CargarKi (DejarseFajar (DejarseFajar (goku, vegeta))))
-//        estadoActual ._1 .estado should not be Fajado(3)
-//        estadoActual ._1 .estado should be (Fajado(1))
-//      }
+      it ("Si Goku se deja fajar 2 veces consecutivas, luego carga ki, y luego vuelve a dejarse fajar, el contador debe estar en 1") {
+        val estadoActual = goku.DejarseFajarPor(vegeta)._1.DejarseFajarPor(vegeta)._1.CargarEnergia(vegeta)._1.DejarseFajarPor(vegeta)
+        estadoActual ._1 .estado should not be Fajado(3)
+        estadoActual ._1 .estado should be (Fajado(1))
+      }
     }
 
 //    describe("Fusionarse"){
