@@ -17,27 +17,26 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
         yajirobe.MuchosGolpesNinjasA(vegeta)._1.energia should be(380)
       }
     }
-  }
 
-//    describe ("Explotar") {
-//      it ("El androide16 es muy debil, y apesar de que explota no logra matar al oponente") {
-//        val (androideMuerto, piccoloRePiyo) = Explotar (androideDebil, piccolo)
-//        androideMuerto.estado should be(Muerto)
-//        piccoloRePiyo.energia should be(600)
-//      }
-//      it ("El androide18 explota, y mata a yajirobe") {
-//        val (androideMuerto, yajirobeMuerto) = Explotar (androide18, yajirobe)
-//        androideMuerto.estado should be(Muerto)
-//        yajirobeMuerto.estado should be(Muerto)
-//      }
-//      it ("El androide18 explota, y pero no puede matar al gran Piccolo Daimaku porque es namekuseiano") {
-//        val (androideMuerto, piccoloExplotado) = Explotar (androide18, piccolo)
-//        androideMuerto.estado should be(Muerto)
-//        piccoloExplotado.estado should be(Luchando)
-//        piccoloExplotado.energia should be(1)
-//      }
-//    }
-//  }
+    describe ("Explotar") {
+      it ("El androide16 es muy debil, y apesar de que explota no logra matar al oponente") {
+        val (androideMuerto, piccoloRePiyo) = androideDebil InmolarseContra piccolo
+        androideMuerto.estado should be(Muerto)
+        piccoloRePiyo.energia should be(600)
+      }
+      it ("El androide18 explota, y mata a yajirobe") {
+        val (androideMuerto, yajirobeMuerto) = androide18 InmolarseContra yajirobe
+        androideMuerto.estado should be(Muerto)
+        yajirobeMuerto.estado should be(Muerto)
+      }
+      it ("El androide18 explota, y pero no puede matar al gran Piccolo Daimaku porque es namekuseiano") {
+        val (androideMuerto, piccoloExplotado) =  androide18 InmolarseContra piccolo
+        androideMuerto.estado should be(Muerto)
+        piccoloExplotado.estado should be(Luchando)
+        piccoloExplotado.energia should be(1)
+      }
+    }
+  }
 
 //  describe("Ataques con energia") {
 //    describe ("Onda") {

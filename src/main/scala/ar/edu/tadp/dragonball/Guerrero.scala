@@ -22,6 +22,9 @@ case class Guerrero(nombre: String,
   val DejarseFajarPor = DejarseFajar(this)_
   val CargarEnergia = CargarKi(this)_
   val MuchosGolpesNinjasA= MuchosGolpesNinja(this)_
+  val InmolarseContra = Explotar(this)_
+
+  def Matate = this actualizarEnergia -this.energia
 
   val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
 
