@@ -5,19 +5,19 @@ import ar.edu.tadp.dragonball.seed._
 import org.scalatest._
 
 class SaiyajinSpec extends FunSpec with ShouldMatchers {
-//  describe ("ConvertirseEnMono"){
-//    it("MajinBu intenta convertirse en mono y no puede, al no ser un saiyajin"){
-//      ConvertirseEnMono(majinBoo,goku) ._1 .especie shouldNot be (Saiyajin(MonoGigante,true))
-//    }
-//
-//    it("Goku intenta convertirse en mono y no puede, no tiene cola"){
-//      ConvertirseEnMono(goku,majinBoo) ._1 .especie shouldNot be (Saiyajin(MonoGigante,true))
-//    }
-//
-//    it("Vegeta intenta convertirse en mono y puede, ya que tiene cola y foto de la luna"){
-//      ConvertirseEnMono(vegeta,majinBoo) ._1 .especie should be (Saiyajin(MonoGigante,true))
-//    }
-//  }
+  describe ("ConvertirseEnMono"){
+    it("MajinBu intenta convertirse en mono y no puede, al no ser un saiyajin"){
+      majinBoo.usar(ConvertirseEnMono)(goku)._1.especie shouldNot be (Saiyajin(MonoGigante,true))
+    }
+
+    it("Goku intenta convertirse en mono y no puede, no tiene cola"){
+      goku.usar(ConvertirseEnMono)(majinBoo)._1.especie shouldNot be (Saiyajin(MonoGigante,true))
+    }
+
+    it("Vegeta intenta convertirse en mono y puede, ya que tiene cola y foto de la luna"){
+      vegeta.usar(ConvertirseEnMono)(majinBoo)._1.especie should be (Saiyajin(MonoGigante,true))
+    }
+  }
 
 //  describe("ConvertirseEnSuperSaiyajin"){
 //    it("MajinBu intenta convertirse en SS y no puede, al no ser un saiyajin"){
