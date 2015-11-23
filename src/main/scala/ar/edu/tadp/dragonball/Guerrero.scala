@@ -4,7 +4,6 @@ import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 
-//import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 import ar.edu.tadp.dragonball.Utils._
 import scala.util.Try
 
@@ -52,7 +51,7 @@ case class Guerrero(nombre: String,
 
   def eliminarItem(item: Item) = copy(items = items.diff(List(item)))
 
-  def eliminarEsferas() = copy(items = items.diff(las7Esferas))
+  def eliminarEsferas = copy(items = items.diff(las7Esferas))
 
   def recuperarEnergiaMaxima = copy(energia = energiaMaxima)
 
@@ -62,19 +61,15 @@ case class Guerrero(nombre: String,
     copy(especie = Saiyajin(nuevoEstado,tieneCola))
   }
 
-//  def agregarMovimientos(movimientos_nuevos: List[MovimientoDeprecated]) =
-//    copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
+  def agregarMovimientos(movimientos_nuevos: List[Movimiento]) =
+    copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
 
-  def puedeSubirDeNivel() = energia >= energiaMaxima / 2
+  val puedeSubirDeNivel = energia >= energiaMaxima / 2
 
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =
     copy(energiaMaxima = energiaMaxima * multiplicador)
 
-//  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[MovimientoDeprecated] = {
-//    movimientos.maxByOptionable( mov => unCriterio(mov(this,oponente)))
-//  }
-
-  def tieneLas7Esferas() =
+  val tieneLas7Esferas =
     (1 to 7).forall(estrellas =>
       items.contains(EsferaDelDragon(estrellas)))
 
@@ -82,6 +77,10 @@ case class Guerrero(nombre: String,
     copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
   }
 
+//  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[MovimientoDeprecated] = {
+//    movimientos.maxByOptionable( mov => unCriterio(mov(this,oponente)))
+//  }
+//
 //  def pelearUnRound(movimiento: MovimientoDeprecated)(oponente: Guerrero): Guerreros = {
 //    val (atacante, defensor) = movimiento(this, oponente)
 //    defensor.contraAtacar(atacante).swap

@@ -91,6 +91,19 @@ package object Movimientos {
     }
   }
 
+  def ConvertirseEnSuperSaiyajin(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
+    val atacante = ejecutante estas Luchando
+    atacante.especie match {
+      case Saiyajin(MonoGigante, _) => (atacante, oponente)
+      case Saiyajin(estado, tieneCola) if atacante puedeSubirDeNivel =>
+        (atacante
+          .cambiarEstadoSaiyajin(SuperSaiyajin(estado.proximoNivelZ), tieneCola)
+          .multiplicarEnergiaMaximaPor(5)
+          , oponente)
+      case _ => (atacante, oponente)
+    }
+  }
+
   abstract class MovimientoDeprecated {
     def movimiento(guerreros: Guerreros): Guerreros
     def apply(guerreros: Guerreros) = {
@@ -126,18 +139,6 @@ package object Movimientos {
       }
     }
   }
-//
-//  case object ConvertirseEnSuperSaiyajin extends MovimientoDeprecated {
-//    override def movimiento(guerreros: Guerreros) = {
-//      val (atacante, oponente) = guerreros
-//      atacante.especie match {
-//        case Saiyajin(MonoGigante, _) => (atacante, oponente)
-//        case Saiyajin(estado, tieneCola) if atacante.puedeSubirDeNivel() =>
-//          (atacante.cambiarEstadoSaiyajin(SuperSaiyajin(estado.proximoNivelZ),tieneCola).multiplicarEnergiaMaximaPor(5), oponente)
-//        case _ => (atacante, oponente)
-//      }
-//    }
-//  }
 
 //  case class Fusionarse(guerreroParaFusionar: Guerrero) extends MovimientoDeprecated  {
 //    override def movimiento(guerreros: Guerreros) = {
