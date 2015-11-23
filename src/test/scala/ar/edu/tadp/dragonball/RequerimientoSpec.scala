@@ -20,30 +20,30 @@ class RequerimientoSpec extends FunSpec with ShouldMatchers {
       androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get(goku)(_:Guerrero) should be(Onda(150)(goku)(_:Guerrero))
     }
   }
-//
-//  describe ("pelearUnRound") {
-//    it ("Goku se deja fajar en round, pero vegeta no aprovecha la oportunidad") {
-//      val (gokuDespues, vegetaDespues) = goku.pelearUnRound(DejarseFajar)(vegeta)
-//      gokuDespues.estado should be(Fajado(1))
-//    }
-//    it ("El androide18 saca a pasear a Yajirobe") {
-//      val (yajirobeDespues, androideDespues) = yajirobe.pelearUnRound(MuchosGolpesNinja)(androide18)
-//      yajirobeDespues.energia should be(90) //se hizo 10 a si mismo, y el androide lo ataco con Onda(150)
-//    }
-//  }
-//
+
+  describe ("pelearUnRound") {
+    it ("Goku se deja fajar en round, pero vegeta no aprovecha la oportunidad") {
+      val (gokuDespues, vegetaDespues) = goku.pelearUnRound(DejarseFajar)(vegeta)
+      gokuDespues.estado should be(Fajado(1))
+    }
+    it ("El androide18 saca a pasear a Yajirobe") {
+      val (yajirobeDespues, androideDespues) = yajirobe.pelearUnRound(MuchosGolpesNinjas)(androide18)
+      yajirobeDespues.energia should be(90) //se hizo 10 a si mismo, y el androide lo ataco con Onda(150)
+    }
+  }
+
 //  describe ("planDeAtaqueContra") {
 //    it ("Goku para quedar con mas energia durante dos turnos, siempre elige CargarKi") {
-//      goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get should be(List(CargarKi, Onda(150)))
+//      goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get should be(List[Movimiento](CargarKi, Onda(150)))
 //    }
 //    it ("Cell es demasiado groso para piccolo, y de guapo no mas, se deja Fajar 3 turnos seguidos.") {
-//      cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia).get should be(List(DejarseFajar, DejarseFajar, DejarseFajar))
+//      cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia).get should be(List[Movimiento](DejarseFajar, DejarseFajar, DejarseFajar))
 //    }
 //    it ("Yajirobe ataca a Goku") {
-//      yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia).get should be(List(UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
+//      yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia).get should be(List[Movimiento](UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
 //    }
 //  }
-//
+
 //  describe ("pelearContra") {
 //    it ("Yajirobe le gana a Goku") {
 //      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia).get) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando)))

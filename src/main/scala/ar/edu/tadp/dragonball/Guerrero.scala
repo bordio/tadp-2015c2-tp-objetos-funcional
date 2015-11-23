@@ -80,9 +80,22 @@ case class Guerrero(nombre: String,
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
     movimientos.maxByOptionable(mov => unCriterio(this.usar(mov)(oponente)))
   }
-//
-//  def pelearUnRound(movimiento: MovimientoDeprecated)(oponente: Guerrero): Guerreros = {
-//    val (atacante, defensor) = movimiento(this, oponente)
+
+  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
+    val (atacante, defensor) = this.usar(movimiento)(oponente)
+    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia).get(defensor)(atacante).swap
+  }
+
+//  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
+//    case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio).get)
+//    case _ =>
+//      val mov = movimientoMasEfectivoContra(oponente)(unCriterio).get
+//      val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
+//      List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
+//  }
+
+//  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
+//    val (atacante, defensor) = this.usar(movimiento)(oponente)
 //    defensor.contraAtacar(atacante).swap
 //  }
 //
@@ -92,11 +105,9 @@ case class Guerrero(nombre: String,
 //    val guerreros = (this,guerrero)
 //    this.movimientoMasEfectivoContra(guerrero)(criterio).fold(guerreros)(_(guerreros))
 //  }
-//
-//
-//  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) : Try[List[MovimientoDeprecated]] = Try {
-//    val (sinMovimientos, guerreros) = (List(): List[MovimientoDeprecated], (this,oponente))
-//
+
+//  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) : Try[List[Movimiento]] = Try {
+//    val (sinMovimientos, guerreros) = (List(): List[Movimiento], (this,oponente))
 //    (1 to cantidadDeRounds).foldLeft(sinMovimientos, guerreros)({
 //      case ((plan,(atacante,oponente)),_) => atacante.movimientoMasEfectivoContra(oponente)(unCriterio).fold(throw new Exception)(mov => (plan :+ mov, atacante.pelearUnRound(mov)(oponente)))
 //    })._1
