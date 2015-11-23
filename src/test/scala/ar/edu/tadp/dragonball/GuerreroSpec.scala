@@ -6,18 +6,18 @@ import org.scalatest.{FunSpec, ShouldMatchers}
 
 class GuerreroSpec extends FunSpec with ShouldMatchers {
 
-//  describe ("Constructor") {
-//    it ("Goku should have") {
-//      goku should have(
-//        'nombre ("goku"),
-//        'energia (100),
-//        'energiaMaxima (1000),
-//        'especie (Saiyajin(Normal,false)),
-//        'estado (Luchando),
-//        'movimientos (Ataques)
-//      )
-//    }
-//  }
+  describe ("Constructor") {
+    it ("Goku should have") {
+      goku should have(
+        'nombre ("goku"),
+        'energia (100),
+        'energiaMaxima (1000),
+        'especie (Saiyajin(Normal, cola = false)),
+        'estado (Luchando),
+        'movimientosPropios (Ataques)
+      )
+    }
+  }
 
   describe ("Movimientos") {
     describe ("CargarKi") {
