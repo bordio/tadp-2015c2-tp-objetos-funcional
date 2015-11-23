@@ -2,6 +2,8 @@ package ar.edu.tadp.dragonball
 
 import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
+import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
+
 //import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 import ar.edu.tadp.dragonball.Utils._
 import scala.util.Try
@@ -16,7 +18,7 @@ case class Guerrero(nombre: String,
 
 
   val movimientos: List[(Guerrero) => Guerreros] = {
-    movimientosPropios.map(mov => mov(this))// ++ especie.movimientosEspeciales.map(mov => mov(this))
+    movimientosPropios.map(mov => mov(this)) ++ especie.movimientosEspeciales.map(mov => mov(this))
   }
 
   def usar(movimiento: Movimiento) = movimiento(this)(_:Guerrero)
@@ -76,9 +78,9 @@ case class Guerrero(nombre: String,
     (1 to 7).forall(estrellas =>
       items.contains(EsferaDelDragon(estrellas)))
 
-//  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
-//    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
-//  }
+  def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
+    copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
+  }
 
 //  def pelearUnRound(movimiento: MovimientoDeprecated)(oponente: Guerrero): Guerreros = {
 //    val (atacante, defensor) = movimiento(this, oponente)

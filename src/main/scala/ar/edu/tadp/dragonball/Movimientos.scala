@@ -40,7 +40,7 @@ package object Movimientos {
     val (atacante, oponente) = (ejecutante estas Luchando, defensor)
     val factor = if (atacante.especie == Androide) 3 else 2
     atacante.especie match {
-      case Androide /*| Monstruo(_,_)*/ => (atacante Matate, _explotar(atacante.energia*factor, oponente))
+      case Androide | Monstruo(_,_) => (atacante Matate, _explotar(atacante.energia*factor, oponente))
       case _ => (atacante, oponente)
     }
   }
@@ -49,7 +49,7 @@ package object Movimientos {
     val (atacante, oponente) = (ejecutante estas Luchando, defensor)
     if (atacante.energia < energiaNecesaria) (atacante, oponente)
     else oponente.especie match {
-//      case Monstruo(_,_) => (-energiaNecesaria, -(energiaNecesaria / 2))
+      case Monstruo(_,_) => (atacante actualizarEnergia -energiaNecesaria, oponente actualizarEnergia -(energiaNecesaria / 2))
       case Androide => (atacante actualizarEnergia -energiaNecesaria, oponente actualizarEnergia Math.abs(energiaNecesaria * 2))
       case _ => (atacante actualizarEnergia -energiaNecesaria, oponente actualizarEnergia -(energiaNecesaria * 2))
     }
@@ -68,6 +68,15 @@ package object Movimientos {
     }
   }
 
+  def ComerseAlOponente(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
+    val atacante = ejecutante estas Luchando
+    atacante.especie match {
+      case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
+        (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente estas Muerto)
+      case _ => (atacante, oponente)
+    }
+  }
+
   abstract class MovimientoDeprecated {
     def movimiento(guerreros: Guerreros): Guerreros
     def apply(guerreros: Guerreros) = {
@@ -82,18 +91,6 @@ package object Movimientos {
       }
     }
   }
-
-
-//  case object ComerseAlOponente extends MovimientoDeprecated {
-//    override def movimiento(guerreros: Guerreros) = {
-//      val (atacante, oponente) = guerreros
-//      atacante.especie match {
-//        case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
-//          (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente.estas(Muerto))
-//        case _ => guerreros
-//      }
-//    }
-//  }
 
   case class UsarItem(item: Item) extends MovimientoDeprecated {
     def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.estas(KO) else guerrero

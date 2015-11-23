@@ -15,8 +15,8 @@ package object seed {
   val androide17: Guerrero = Guerrero("Androide17", List(ArmaDeFuego, Municion(ArmaDeFuego)), 1800, 5000, Androide, Luchando, Ataques ++ List[Movimiento](Explotar)/*,UsarItem(FotoDeLaLuna))*/)
   val yajirobe: Guerrero = Guerrero("Yajirobe", List(SemillaDelErmitanio), 400, 400, Humano, Luchando, Ataques)
   val androideDebil: Guerrero = Guerrero("Androide16", List(ArmaDeFuego, Municion(ArmaDeFuego)), 200, 300, Androide, Luchando, Ataques ++ List[Movimiento](Explotar)/*, Onda(80))*/)
-//  val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(digestionCell,List()), Luchando, Ataques/* ++ List(ComerseAlOponente)*/)
-//  val majinBoo: Guerrero = Guerrero("MajinBoo", List(), 2000, 3000, Monstruo(digestionMajinBoo, List()), Luchando, Ataques/* ++ List(ComerseAlOponente)*/)
+  val cell: Guerrero = Guerrero("Cell", List(EsferaDelDragon(3)), 1200, 3000, Monstruo(digestionCell,List()), Luchando, Ataques ++ List[Movimiento](ComerseAlOponente))
+  val majinBoo: Guerrero = Guerrero("MajinBoo", List(), 2000, 3000, Monstruo(digestionMajinBoo, List()), Luchando, Ataques ++ List[Movimiento](ComerseAlOponente))
   val piccolo: Guerrero = Guerrero("Piccolo", List(), 1000, 1000, Namekusein, Luchando, Ataques/* ++ List(Magia(hacertePensar))*/)
   val yamcha: Guerrero = Guerrero("Yamcha",List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7)),50,200,Humano,Luchando,Ataques)
 }
