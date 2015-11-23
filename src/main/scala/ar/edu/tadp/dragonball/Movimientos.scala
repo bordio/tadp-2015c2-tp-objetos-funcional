@@ -20,7 +20,7 @@ package object Movimientos {
     }
   }
 
-  def MuchosGolpesNinja(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+  def MuchosGolpesNinjas(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
     val (atacante, oponente) = (ejecutante estas Luchando, defensor)
     (atacante.especie, oponente.especie) match {
       case (Humano, Androide) => (atacante actualizarEnergia -10, oponente)

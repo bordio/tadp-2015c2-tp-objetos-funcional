@@ -16,8 +16,8 @@ case class Guerrero(nombre: String,
                     movimientosPropios: List[Movimiento]) {
 
 
-  val movimientos: List[(Guerrero) => Guerreros] = {
-    movimientosPropios.map(mov => mov(this)) ++ especie.movimientosEspeciales.map(mov => mov(this))
+  val movimientos: List[Movimiento] = {
+    movimientosPropios ++ especie.movimientosEspeciales
   }
 
   def usar(movimiento: Movimiento) = movimiento(this)(_:Guerrero)
@@ -77,9 +77,9 @@ case class Guerrero(nombre: String,
     copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))
   }
 
-//  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[MovimientoDeprecated] = {
-//    movimientos.maxByOptionable( mov => unCriterio(mov(this,oponente)))
-//  }
+  def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
+    movimientos.maxByOptionable(mov => unCriterio(this.usar(mov)(oponente)))
+  }
 //
 //  def pelearUnRound(movimiento: MovimientoDeprecated)(oponente: Guerrero): Guerreros = {
 //    val (atacante, defensor) = movimiento(this, oponente)

@@ -6,20 +6,20 @@ import ar.edu.tadp.dragonball.seed._
 import org.scalatest._
 
 class RequerimientoSpec extends FunSpec with ShouldMatchers {
-//  describe ("movimientoMasEfectivoContra") {
-//    it ("Goku elige CargarKi porque lo deja con mas energia") {
-//      goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia).get should be(CargarKi)
-//    }
-//    it ("Vegeta elige Onda(150) para quedar con menos energia") {
-//      vegeta.movimientoMasEfectivoContra(goku)(quedarConMenosEnergia).get should be(Onda(150))
-//    }
-//    it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
-//      goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get should be(MuchosGolpesNinja)
-//    }
-//    it ("Androide18 elige Onda(150) para quedar con mas energia") {
-//      androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get should be(Onda(150))
-//    }
-//  }
+  describe ("movimientoMasEfectivoContra") {
+    it("Goku elige CargarKi porque lo deja con mas energia") {
+      goku.movimientoMasEfectivoContra(vegeta)(quedarConMasEnergia).get(goku)(_:Guerrero) should be(CargarKi(goku)(_:Guerrero))
+    }
+    it ("Vegeta elige Onda(150) para quedar con menos energia") {
+      vegeta.movimientoMasEfectivoContra(goku)(quedarConMenosEnergia).get(goku)(_:Guerrero) should be(Onda(150)(goku)(_:Guerrero))
+    }
+    it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
+      goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get(goku)(_:Guerrero) should be(MuchosGolpesNinjas(goku)(_:Guerrero))
+    }
+    it ("Androide18 elige Onda(150) para quedar con mas energia") {
+      androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get(goku)(_:Guerrero) should be(Onda(150)(goku)(_:Guerrero))
+    }
+  }
 //
 //  describe ("pelearUnRound") {
 //    it ("Goku se deja fajar en round, pero vegeta no aprovecha la oportunidad") {
