@@ -19,12 +19,7 @@ case class Guerrero(nombre: String,
     movimientosPropios.map(mov => mov(this))// ++ especie.movimientosEspeciales.map(mov => mov(this))
   }
 
-  val DejarseFajarPor = DejarseFajar(this)_
-  val CargarEnergia = CargarKi(this)_
-  val MuchosGolpesNinjasA = MuchosGolpesNinja(this)_
-  val InmolarseContra = Explotar(this)_
-  def KameHame(poder:Int) = Onda(poder)(this)_
-  val LanzarGenkidamaContra = Genkidama(this)_
+  def usar(movimiento: Movimiento) = movimiento(this)(_:Guerrero)
 
   def Matate = this actualizarEnergia -this.energia
 

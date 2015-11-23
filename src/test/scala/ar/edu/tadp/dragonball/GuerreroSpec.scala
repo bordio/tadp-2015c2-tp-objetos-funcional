@@ -22,25 +22,25 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
   describe ("Movimientos") {
     describe ("CargarKi") {
       it ("Goku (Normal) al usar CargarKi, se le debe incrementar a 200 su energia") {
-        goku.CargarEnergia(vegeta)._1 .energia should be (200)
+        goku.usar(CargarKi)(vegeta)._1 .energia should be (200)
       }
       it ("Trunks (SuperSaiyajin nivel 1) al usar CargarKi, se le debe incrementar a 1500 (1350 + 1*150) su energia") {
-        trunks.CargarEnergia(goku) ._1 .energia should be (1500)
+        trunks.usar(CargarKi)(goku) ._1 .energia should be (1500)
       }
       it ("Androide18 al usar CargarKi no debe tener ningun efecto por ser Androide") {
-        androide18.CargarEnergia(trunks) ._1 .energia should be (900)
+        androide18.usar(CargarKi)(trunks) ._1 .energia should be (900)
       }
     }
 
     describe ("DejarseFajar") {
       it ("Goku al DejarseFajar, el contador de rounds dejandose fajar debe estar en 1") {
-        goku.DejarseFajarPor(vegeta) ._1 .estado should be (Fajado(1))
+        goku.usar(DejarseFajar)(vegeta) ._1 .estado should be (Fajado(1))
       }
       it ("Si Goku se deja fajar 2 veces consecutivas, el contador debe contar 2") {
-        goku.DejarseFajarPor(vegeta)._1.DejarseFajarPor(vegeta)._1.estado should be (Fajado(2))
+        goku.usar(DejarseFajar)(vegeta)._1.usar(DejarseFajar)(vegeta)._1.estado should be (Fajado(2))
       }
       it ("Si Goku se deja fajar 2 veces consecutivas, luego carga ki, y luego vuelve a dejarse fajar, el contador debe estar en 1") {
-        val estadoActual = goku.DejarseFajarPor(vegeta)._1.DejarseFajarPor(vegeta)._1.CargarEnergia(vegeta)._1.DejarseFajarPor(vegeta)
+        val estadoActual = goku.usar(DejarseFajar)(vegeta)._1.usar(DejarseFajar)(vegeta)._1.usar(CargarKi)(vegeta)._1.usar(DejarseFajar)(vegeta)
         estadoActual ._1 .estado should not be Fajado(3)
         estadoActual ._1 .estado should be (Fajado(1))
       }
