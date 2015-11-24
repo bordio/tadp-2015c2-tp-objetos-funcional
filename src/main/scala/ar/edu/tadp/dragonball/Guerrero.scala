@@ -21,19 +21,13 @@ case class Guerrero(nombre: String,
 
   def pegarCon(movimiento: Movimiento) = movimiento(this)(_:Guerrero)
 
-  def Matate = this actualizarEnergia -this.energia
-
-  val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
-
-  def estas(nuevoEstado: Estado) : Guerrero = {
+  def cambiarEstadoA(nuevoEstado: Estado) : Guerrero = {
     copy(estado = nuevoEstado)
   }
 
-  def sosAndroide = especie.equals(Androide)
-
   def actualizarEnergia(variacion: Int) = {
     val guerrero = copy(energia = (energia + variacion).max(0).min(energiaMaxima))
-    if (guerrero.energia <= 0) guerrero estas Muerto
+    if (guerrero.energia <= 0) guerrero cambiarEstadoA Muerto
     else guerrero
   }
 
@@ -49,8 +43,7 @@ case class Guerrero(nombre: String,
   }
 
   def eliminarItem(item: Item) = copy(items = items.diff(List(item)))
-
-  def eliminarEsferas = copy(items = items.diff(las7Esferas))
+  def eliminarItem(listaDeItems: List[Item]) = copy(items = items.diff(listaDeItems))
 
   def recuperarEnergiaMaxima = copy(energia = energiaMaxima)
 
@@ -63,12 +56,12 @@ case class Guerrero(nombre: String,
   def agregarMovimientos(movimientos_nuevos: List[Movimiento]) =
     copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
 
-  def puedeSubirDeNivel = energia >= energiaMaxima / 2
-
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =
     copy(energiaMaxima = energiaMaxima * multiplicador)
 
   def tieneLas7Esferas = (1 to 7).forall(estrellas => items.contains(EsferaDelDragon(estrellas)))
+
+  def sosAndroide = especie.equals(Androide)
 
   def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
     copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))

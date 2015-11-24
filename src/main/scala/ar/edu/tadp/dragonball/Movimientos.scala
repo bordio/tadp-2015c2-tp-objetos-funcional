@@ -6,22 +6,22 @@ package object Movimientos {
 
   def DejarseFajar(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
     atacante.estado match {
-      case Luchando => (atacante estas Fajado(1), oponente)
-      case Fajado(rounds) => (atacante estas Fajado(rounds + 1), oponente)
+      case Luchando => (atacante cambiarEstadoA Fajado(1), oponente)
+      case Fajado(rounds) => (atacante cambiarEstadoA Fajado(rounds + 1), oponente)
       case _ => (atacante, oponente)
     }
   }
 
   def CargarKi(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
     atacante.especie match {
-      case Saiyajin(SuperSaiyajin(nivel), _) => (atacante estas Luchando actualizarEnergia (150 * nivel), oponente)
-      case Androide => (atacante estas Luchando, oponente)
-      case _ => (atacante estas Luchando actualizarEnergia 100, oponente)
+      case Saiyajin(SuperSaiyajin(nivel), _) => (atacante cambiarEstadoA Luchando actualizarEnergia (150 * nivel), oponente)
+      case Androide => (atacante cambiarEstadoA Luchando, oponente)
+      case _ => (atacante cambiarEstadoA Luchando actualizarEnergia 100, oponente)
     }
   }
 
   def MuchosGolpesNinja(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
-    val (atacante, oponente) = (ejecutante estas Luchando, defensor)
+    val (atacante, oponente) = (ejecutante cambiarEstadoA Luchando, defensor)
     (atacante.especie, oponente.especie) match {
       case (Humano, Androide) => (atacante actualizarEnergia -10, oponente)
       case _ => if (atacante.energia >= oponente.energia) (atacante, oponente actualizarEnergia -20) else (atacante actualizarEnergia -20, oponente)
@@ -36,17 +36,17 @@ package object Movimientos {
         case _ => oponente actualizarEnergia -Math.abs(danioRecibido)
       }
     }
-
-    val (atacante, oponente) = (ejecutante estas Luchando, defensor)
+    def Matate(guerrero: Guerrero) = guerrero actualizarEnergia -guerrero.energia
+    val (atacante, oponente) = (ejecutante cambiarEstadoA Luchando, defensor)
     val factor = if (atacante.especie == Androide) 3 else 2
     atacante.especie match {
-      case Androide | Monstruo(_,_) => (atacante Matate, _explotar(atacante.energia*factor, oponente))
+      case Androide | Monstruo(_,_) => (Matate(atacante), _explotar(atacante.energia*factor, oponente))
       case _ => (atacante, oponente)
     }
   }
 
   def Onda(energiaNecesaria: Int)(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
-    val (atacante, oponente) = (ejecutante estas Luchando, defensor)
+    val (atacante, oponente) = (ejecutante cambiarEstadoA Luchando, defensor)
     if (atacante.energia < energiaNecesaria) (atacante, oponente)
     else oponente.especie match {
       case Monstruo(_,_) => (atacante actualizarEnergia -energiaNecesaria, oponente actualizarEnergia -(energiaNecesaria / 2))
@@ -63,22 +63,22 @@ package object Movimientos {
       }
     }
     (atacante.estado, oponente.especie) match {
-      case (_, Androide) => (atacante estas Luchando, oponente actualizarEnergia Math.abs(calcularDanio(atacante.estado)))
-      case (_,_) => (atacante estas Luchando, oponente actualizarEnergia calcularDanio(atacante.estado))
+      case (_, Androide) => (atacante cambiarEstadoA Luchando, oponente actualizarEnergia Math.abs(calcularDanio(atacante.estado)))
+      case (_,_) => (atacante cambiarEstadoA Luchando, oponente actualizarEnergia calcularDanio(atacante.estado))
     }
   }
 
   def ComerseAlOponente(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
-    val atacante = ejecutante estas Luchando
+    val atacante = ejecutante cambiarEstadoA Luchando
     atacante.especie match {
       case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
-        (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente estas Muerto)
+        (atacante.comerseA(oponente, tipoDigestion, guerrerosComidos), oponente cambiarEstadoA Muerto)
       case _ => (atacante, oponente)
     }
   }
 
   def ConvertirseEnMono(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
-    val atacante = ejecutante estas Luchando
+    val atacante = ejecutante cambiarEstadoA Luchando
     atacante.especie match {
       case Saiyajin(MonoGigante, _) => (atacante, oponente)
       case Saiyajin(_, tieneCola) if tieneCola && atacante.tieneItem(FotoDeLaLuna) =>
@@ -92,10 +92,11 @@ package object Movimientos {
   }
 
   def ConvertirseEnSuperSaiyajin(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
-    val atacante = ejecutante estas Luchando
+    def puedeSubirDeNivel(guerrero:Guerrero) = guerrero.energia >= guerrero.energiaMaxima / 2
+    val atacante = ejecutante cambiarEstadoA Luchando
     atacante.especie match {
       case Saiyajin(MonoGigante, _) => (atacante, oponente)
-      case Saiyajin(estado, tieneCola) if atacante puedeSubirDeNivel =>
+      case Saiyajin(estado, tieneCola) if puedeSubirDeNivel(atacante) =>
         (atacante
           .cambiarEstadoSaiyajin(SuperSaiyajin(estado.proximoNivelZ), tieneCola)
           .multiplicarEnergiaMaximaPor(5)
@@ -119,20 +120,21 @@ package object Movimientos {
   }
 
   def Magia(paseDeMagia: Guerreros => Guerreros)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+    val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
     atacante.especie match {
       case _:Magico => paseDeMagia(atacante, oponente)
-      case _ if atacante tieneLas7Esferas => paseDeMagia (atacante eliminarEsferas, oponente)
+      case _ if atacante tieneLas7Esferas => paseDeMagia (atacante eliminarItem las7Esferas, oponente)
       case _ => (atacante, oponente)
     }
   }
 
   def UsarItem(item: Item)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
-    def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.estas(KO) else guerrero
+    def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.cambiarEstadoA(KO) else guerrero
     (item, oponente.especie, oponente.estado) match {
       case (ArmaRoma, Androide, _) => (atacante, oponente)
       case (ArmaRoma, _, _) => (atacante, quedarKOSiEnergiaMenorA300(oponente))
       case (ArmaFilosa, Saiyajin(MonoGigante, _), _) =>
-        (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, cola = false)).cambiarEnergiaA(1).estas(KO))
+        (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, cola = false)).cambiarEnergiaA(1).cambiarEstadoA(KO))
       case (ArmaFilosa, Saiyajin(estado, tieneCola), _) if tieneCola =>
         (atacante, oponente.cambiarEspecieA(Saiyajin(estado, cola = false)).cambiarEnergiaA(1))
       case (ArmaFilosa, _, _) => (atacante, oponente actualizarEnergia -(atacante.energia / 100))

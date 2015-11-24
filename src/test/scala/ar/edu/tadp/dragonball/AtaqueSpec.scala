@@ -55,15 +55,15 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
 
     describe ("Genkidama") {
       it ("Goku se deja fajar 3 turnos y saca 1000") {
-        val gokuDejandoseFajar = goku estas Fajado(3)
+        val gokuDejandoseFajar = goku cambiarEstadoA Fajado(3)
         gokuDejandoseFajar.pegarCon(Genkidama)(trunks) ._2 .energia should be(350)
       }
       it ("Goku asesina a vegeta con una genkidama en 3 turnos") {
-        val gokuFajado = goku estas Fajado(3)
+        val gokuFajado = goku cambiarEstadoA Fajado(3)
         gokuFajado.pegarCon(Genkidama)(vegeta) ._2 .estado should be(Muerto)
       }
       it ("Goku se ceba queriendo matar a todos con su genkidama, pero al androide lo cura") {
-        val gokuFajado = goku estas Fajado(3)
+        val gokuFajado = goku cambiarEstadoA Fajado(3)
         gokuFajado.pegarCon(Genkidama)(androideDebil) ._2 .energia should be(300)
       }
     }
