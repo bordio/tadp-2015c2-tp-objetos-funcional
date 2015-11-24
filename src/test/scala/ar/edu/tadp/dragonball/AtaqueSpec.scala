@@ -8,29 +8,29 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
   describe("Ataques fisico") {
     describe("MuchosGolpesNinjas") {
       it("Yajirobe le pega a androide18 pero se hace daño a si mismo") {
-        yajirobe.usar(MuchosGolpesNinjas)(androide18)._1.energia should be(390)
+        yajirobe.pegarCon(MuchosGolpesNinjas)(androide18)._1.energia should be(390)
       }
       it("Yajirobe le pega a androide16 que es más débil que él pero se hace daño a si mismo") {
-        yajirobe.usar(MuchosGolpesNinjas)(androideDebil)._1.energia should be(390)
+        yajirobe.pegarCon(MuchosGolpesNinjas)(androideDebil)._1.energia should be(390)
       }
       it("Yajirobe quiere pegarle a vegeta pero no logra más que hacerse daño a si mismo") {
-        yajirobe.usar(MuchosGolpesNinjas)(vegeta)._1.energia should be(380)
+        yajirobe.pegarCon(MuchosGolpesNinjas)(vegeta)._1.energia should be(380)
       }
     }
 
     describe ("Explotar") {
       it ("El androide16 es muy debil, y apesar de que explota no logra matar al oponente") {
-        val (androideMuerto, piccoloRePiyo) = androideDebil.usar(Explotar)(piccolo)
+        val (androideMuerto, piccoloRePiyo) = androideDebil.pegarCon(Explotar)(piccolo)
         androideMuerto.estado should be(Muerto)
         piccoloRePiyo.energia should be(600)
       }
       it ("El androide18 explota, y mata a yajirobe") {
-        val (androideMuerto, yajirobeMuerto) = androide18.usar(Explotar)(yajirobe)
+        val (androideMuerto, yajirobeMuerto) = androide18.pegarCon(Explotar)(yajirobe)
         androideMuerto.estado should be(Muerto)
         yajirobeMuerto.estado should be(Muerto)
       }
       it ("El androide18 explota, y pero no puede matar al gran Piccolo Daimaku porque es namekuseiano") {
-        val (androideMuerto, piccoloExplotado) =  androide18.usar(Explotar)(piccolo)
+        val (androideMuerto, piccoloExplotado) =  androide18.pegarCon(Explotar)(piccolo)
         androideMuerto.estado should be(Muerto)
         piccoloExplotado.estado should be(Luchando)
         piccoloExplotado.energia should be(1)
@@ -41,30 +41,30 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
   describe("Ataques con energia") {
     describe("Onda") {
       it("Vegeta le tira un kame hame a yajirobe!") {
-        vegeta.usar(Onda(150))(yajirobe)._1.energia should be(350)
-        vegeta.usar(Onda(150))(yajirobe)._2.energia should be(100)
+        vegeta.pegarCon(Onda(150))(yajirobe)._1.energia should be(350)
+        vegeta.pegarCon(Onda(150))(yajirobe)._2.energia should be(100)
       }
       it("Goku trata de tirar un kame hame de 200 pero no tiene energia suficiente") {
-        goku.usar(Onda(200))(vegeta)._1.energia should be(100)
+        goku.pegarCon(Onda(200))(vegeta)._1.energia should be(100)
       }
       it("Trunks ingenuamente trata de atacar con Kame Hame a androide18, pero lo cura") {
-        trunks.usar(Onda(200))(androide18)._2.energia should be(1300)
-        trunks.usar(Onda(200))(androide18)._1.energia should be(1150)
+        trunks.pegarCon(Onda(200))(androide18)._2.energia should be(1300)
+        trunks.pegarCon(Onda(200))(androide18)._1.energia should be(1150)
       }
     }
 
     describe ("Genkidama") {
       it ("Goku se deja fajar 3 turnos y saca 1000") {
         val gokuDejandoseFajar = goku estas Fajado(3)
-        gokuDejandoseFajar.usar(Genkidama)(trunks) ._2 .energia should be(350)
+        gokuDejandoseFajar.pegarCon(Genkidama)(trunks) ._2 .energia should be(350)
       }
       it ("Goku asesina a vegeta con una genkidama en 3 turnos") {
         val gokuFajado = goku estas Fajado(3)
-        gokuFajado.usar(Genkidama)(vegeta) ._2 .estado should be(Muerto)
+        gokuFajado.pegarCon(Genkidama)(vegeta) ._2 .estado should be(Muerto)
       }
       it ("Goku se ceba queriendo matar a todos con su genkidama, pero al androide lo cura") {
         val gokuFajado = goku estas Fajado(3)
-        gokuFajado.usar(Genkidama)(androideDebil) ._2 .energia should be(300)
+        gokuFajado.pegarCon(Genkidama)(androideDebil) ._2 .energia should be(300)
       }
     }
   }

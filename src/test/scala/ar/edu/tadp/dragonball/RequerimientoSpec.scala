@@ -34,13 +34,13 @@ class RequerimientoSpec extends FunSpec with ShouldMatchers {
 
 //  describe ("planDeAtaqueContra") {
 //    it ("Goku para quedar con mas energia durante dos turnos, siempre elige CargarKi") {
-//      goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get should be(List[Movimiento](CargarKi, Onda(150)))
+//      goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia) should be(List[Option[Movimiento]](Some(CargarKi), Some(Onda(150))))
 //    }
 //    it ("Cell es demasiado groso para piccolo, y de guapo no mas, se deja Fajar 3 turnos seguidos.") {
-//      cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia).get should be(List[Movimiento](DejarseFajar, DejarseFajar, DejarseFajar))
+//      cell.planDeAtaqueContra(piccolo, 3)(quedarConMenosEnergia) should be(List[Movimiento](DejarseFajar, DejarseFajar, DejarseFajar))
 //    }
 //    it ("Yajirobe ataca a Goku") {
-//      yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia).get should be(List[Movimiento](UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
+//      yajirobe.planDeAtaqueContra(cell, 2)(quedarConMasEnergia) should be(List[Movimiento](UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio)))
 //    }
 //  }
 

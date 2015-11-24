@@ -20,7 +20,7 @@ case class Guerrero(nombre: String,
     movimientosPropios ++ especie.movimientosEspeciales
   }
 
-  def usar(movimiento: Movimiento) = movimiento(this)(_:Guerrero)
+  def pegarCon(movimiento: Movimiento) = movimiento(this)(_:Guerrero)
 
   def Matate = this actualizarEnergia -this.energia
 
@@ -78,21 +78,25 @@ case class Guerrero(nombre: String,
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
-    movimientos.maxByOptionable(mov => unCriterio(this.usar(mov)(oponente)))
+    movimientos.maxByOptionable(mov => unCriterio(this.pegarCon(mov)(oponente)))
   }
 
   def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
-    val (atacante, defensor) = this.usar(movimiento)(oponente)
+    val (atacante, defensor) = this.pegarCon(movimiento)(oponente)
     defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia).get(defensor)(atacante).swap
   }
 
-//  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Movimiento] = cantidadDeRounds match {
-//    case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio).get)
-//    case _ =>
-//      val mov = movimientoMasEfectivoContra(oponente)(unCriterio).get
-//      val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
-//      List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds-1)(unCriterio)
-//  }
+
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Option[Movimiento]] = {
+    def identidad(atacante: Guerrero)(oponente: Guerrero): Guerreros = (atacante, oponente)
+    cantidadDeRounds match {
+      case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
+      case _ =>
+        val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
+        val (atacanteActual, oponenteActual) = pelearUnRound(mov.getOrElse(identidad))(oponente)
+        List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds - 1)(unCriterio)
+    }
+  }
 
 //  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
 //    val (atacante, defensor) = this.usar(movimiento)(oponente)
