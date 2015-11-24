@@ -64,14 +64,12 @@ case class Guerrero(nombre: String,
   def agregarMovimientos(movimientos_nuevos: List[Movimiento]) =
     copy(movimientosPropios = movimientos_nuevos ++ movimientosPropios)
 
-  val puedeSubirDeNivel = energia >= energiaMaxima / 2
+  def puedeSubirDeNivel = energia >= energiaMaxima / 2
 
   def multiplicarEnergiaMaximaPor(multiplicador: Int) =
     copy(energiaMaxima = energiaMaxima * multiplicador)
 
-  val tieneLas7Esferas =
-    (1 to 7).forall(estrellas =>
-      items.contains(EsferaDelDragon(estrellas)))
+  def tieneLas7Esferas = (1 to 7).forall(estrellas => items.contains(EsferaDelDragon(estrellas)))
 
   def comerseA(oponente: Guerrero, tipoDigestion: TipoDigestion, guerrerosComidos: List[Guerrero]) = {
     copy(especie = Monstruo(tipoDigestion = tipoDigestion, guerrerosComidos = guerrerosComidos :+ oponente))

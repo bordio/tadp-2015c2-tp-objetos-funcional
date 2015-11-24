@@ -62,18 +62,18 @@ class GuerreroSpec extends FunSpec with ShouldMatchers {
       }
     }
 
-//    describe ("Magia") {
-//      it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
-//        val (atacante, oponente) = Magia(hacertePensar)(piccolo,goku)
-//        oponente.nombre should be(goku.nombre)
-//        oponente.energia should be(102)
-//      }
-//      it ("Yamcha tiene las 7 esferas, por eso puede hacer magia y se queda sin esferas") {
-//        val (atacante, oponente) = Magia(hacertePensar)(yamcha,goku)
-//        oponente.nombre should be(goku.nombre)
-//        oponente.energia should be(102)
-//        atacante.tieneLas7Esferas should be (false)
-//      }
-//    }
+    describe ("Magia") {
+      it ("Piccolo hace pensar a Goku, y le deja su energia en 102") {
+        val (atacante, oponente) = piccolo.pegarCon(Magia(hacertePensar))(goku)
+        oponente.nombre should be(goku.nombre)
+        oponente.energia should be(102)
+      }
+      it ("Yamcha tiene las 7 esferas, por eso puede hacer magia y se queda sin esferas") {
+        val (atacante, oponente) = yamcha.pegarCon(Magia(hacertePensar))(goku)
+        oponente.nombre should be(goku.nombre)
+        oponente.energia should be(102)
+        atacante.tieneLas7Esferas should be (false)
+      }
+    }
   }
 }

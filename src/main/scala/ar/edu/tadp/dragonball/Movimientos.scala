@@ -118,6 +118,14 @@ package object Movimientos {
     }
   }
 
+  def Magia(paseDeMagia: Guerreros => Guerreros)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+    atacante.especie match {
+      case _:Magico => paseDeMagia(atacante, oponente)
+      case _ if atacante tieneLas7Esferas => paseDeMagia (atacante eliminarEsferas, oponente)
+      case _ => (atacante, oponente)
+    }
+  }
+
   abstract class MovimientoDeprecated {
     def movimiento(guerreros: Guerreros): Guerreros
     def apply(guerreros: Guerreros) = {
@@ -153,16 +161,4 @@ package object Movimientos {
       }
     }
   }
-
-
-//  case class Magia(paseDeMagia: Guerreros => Guerreros) extends MovimientoDeprecated {
-//    override def movimiento(guerrreros: Guerreros) = {
-//      val(atacante, oponente): Guerreros = guerrreros
-//      atacante.especie match {
-//       case _:Magico => paseDeMagia(guerrreros)
-//       case _ if (atacante.tieneLas7Esferas) => paseDeMagia (atacante.eliminarEsferas, oponente)
-//       case _ => guerrreros
-//     }
-//   }
-//  }
 }
