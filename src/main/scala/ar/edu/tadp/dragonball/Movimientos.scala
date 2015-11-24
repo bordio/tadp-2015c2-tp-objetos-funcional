@@ -20,7 +20,7 @@ package object Movimientos {
     }
   }
 
-  def MuchosGolpesNinjas(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+  def MuchosGolpesNinja(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
     val (atacante, oponente) = (ejecutante estas Luchando, defensor)
     (atacante.especie, oponente.especie) match {
       case (Humano, Androide) => (atacante actualizarEnergia -10, oponente)
@@ -126,39 +126,21 @@ package object Movimientos {
     }
   }
 
-  abstract class MovimientoDeprecated {
-    def movimiento(guerreros: Guerreros): Guerreros
-    def apply(guerreros: Guerreros) = {
-      val (atacante, oponente) = guerreros
-      (atacante.estado, this) match {
-        case (Muerto, _) => guerreros
-        case (KO, UsarItem(SemillaDelErmitanio)) => movimiento(guerreros)
-        case (KO, _) => guerreros
-        case (Luchando, _) => movimiento(guerreros)
-//        case (Fajado(_), Genkidama) => movimiento(guerreros)
-        case (Fajado(_), _) => movimiento(atacante estas Luchando, oponente)
-      }
-    }
-  }
-
-  case class UsarItem(item: Item) extends MovimientoDeprecated {
+  def UsarItem(item: Item)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
     def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.estas(KO) else guerrero
-    override def movimiento(guerreros: Guerreros) = {
-      val (atacante, oponente) = guerreros
-      (item, oponente.especie, oponente.estado) match {
-        case (ArmaRoma, Androide, _) => (atacante, oponente)
-        case (ArmaRoma, _, _) => (atacante, quedarKOSiEnergiaMenorA300(oponente))
-        case (ArmaFilosa, Saiyajin(MonoGigante, _), _) =>
-          (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, cola = false)).cambiarEnergiaA(1).estas(KO))
-        case (ArmaFilosa, Saiyajin(estado, tieneCola), _) if tieneCola =>
-          (atacante, oponente.cambiarEspecieA(Saiyajin(estado, cola = false)).cambiarEnergiaA(1))
-        case (ArmaFilosa, _, _) => (atacante, oponente actualizarEnergia -(atacante.energia / 100))
-        //TODO: Restar una municion del inventario
-        case (ArmaDeFuego, Humano, _) => (atacante, oponente actualizarEnergia -20)
-        case (ArmaDeFuego, Namekusein, KO) => (atacante, oponente actualizarEnergia -10)
-        case (SemillaDelErmitanio, _, _) => (atacante.recuperarEnergiaMaxima.eliminarItem(item), oponente)
-        case (_,_,_) => (atacante, oponente)
-      }
+    (item, oponente.especie, oponente.estado) match {
+      case (ArmaRoma, Androide, _) => (atacante, oponente)
+      case (ArmaRoma, _, _) => (atacante, quedarKOSiEnergiaMenorA300(oponente))
+      case (ArmaFilosa, Saiyajin(MonoGigante, _), _) =>
+        (atacante, oponente.cambiarEspecieA(Saiyajin(Normal, cola = false)).cambiarEnergiaA(1).estas(KO))
+      case (ArmaFilosa, Saiyajin(estado, tieneCola), _) if tieneCola =>
+        (atacante, oponente.cambiarEspecieA(Saiyajin(estado, cola = false)).cambiarEnergiaA(1))
+      case (ArmaFilosa, _, _) => (atacante, oponente actualizarEnergia -(atacante.energia / 100))
+      //TODO: Restar una municion del inventario
+      case (ArmaDeFuego, Humano, _) => (atacante, oponente actualizarEnergia -20)
+      case (ArmaDeFuego, Namekusein, KO) => (atacante, oponente actualizarEnergia -10)
+      case (SemillaDelErmitanio, _, _) => (atacante.recuperarEnergiaMaxima.eliminarItem(item), oponente)
+      case (_,_,_) => (atacante, oponente)
     }
   }
 }

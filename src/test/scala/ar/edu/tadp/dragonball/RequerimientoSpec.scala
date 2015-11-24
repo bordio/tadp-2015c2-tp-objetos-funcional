@@ -14,7 +14,7 @@ class RequerimientoSpec extends FunSpec with ShouldMatchers {
       vegeta.movimientoMasEfectivoContra(goku)(quedarConMenosEnergia).get(goku)(_:Guerrero) should be(Onda(150)(goku)(_:Guerrero))
     }
     it ("Si Goku pelea contra un Androide y quiere quedar con menos energia, entonces debe elegir MuchosGolpesNinjas") {
-      goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get(goku)(_:Guerrero) should be(MuchosGolpesNinjas(goku)(_:Guerrero))
+      goku.movimientoMasEfectivoContra(androide18)(quedarConMenosEnergia).get(goku)(_:Guerrero) should be(MuchosGolpesNinja(goku)(_:Guerrero))
     }
     it ("Androide18 elige Onda(150) para quedar con mas energia") {
       androide18.movimientoMasEfectivoContra(yajirobe)(quedarConMasEnergia).get(goku)(_:Guerrero) should be(Onda(150)(goku)(_:Guerrero))
@@ -27,7 +27,7 @@ class RequerimientoSpec extends FunSpec with ShouldMatchers {
       gokuDespues.estado should be(Fajado(1))
     }
     it ("El androide18 saca a pasear a Yajirobe") {
-      val (yajirobeDespues, androideDespues) = yajirobe.pelearUnRound(MuchosGolpesNinjas)(androide18)
+      val (yajirobeDespues, androideDespues) = yajirobe.pelearUnRound(MuchosGolpesNinja)(androide18)
       yajirobeDespues.energia should be(90) //se hizo 10 a si mismo, y el androide lo ataco con Onda(150)
     }
   }
@@ -44,16 +44,15 @@ class RequerimientoSpec extends FunSpec with ShouldMatchers {
 //    }
 //  }
 
-//  describe ("pelearContra") {
-//    it ("Yajirobe le gana a Goku") {
-//      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 3)(quedarConMasEnergia).get) should be(Ganador(yajirobe.cambiarEnergiaA(100).estas(Luchando)))
-//    }
-//    it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
-//      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia).get) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
-//    }
-//    it ("MajinBoo tarda 42 turnos en matar a Vegeta cuando se transforma en Mono") {
-//      val (vegetaMono,majinboo) = ConvertirseEnMono (vegeta, majinBoo)
-//      vegetaMono.recuperarEnergiaMaxima.pelearContra(majinboo)(vegetaMono.planDeAtaqueContra(majinboo, 42)(quedarConMasEnergia).get) should be(Ganador(majinBoo.cambiarEnergiaA(2950)))
-//    }
-//  }
+  describe ("pelearContra") {
+    it ("Yajirobe le gana a Goku en 19 turnos") {
+      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 19)(quedarConMasEnergia)) should be(Ganador(yajirobe.eliminarItem(SemillaDelErmitanio).cambiarEnergiaA(100)))
+    }
+    it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
+      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia)) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
+    }
+    it ("A pesar de que vegeta empieza atacando, majin boo lo extermina") {
+      vegeta.recuperarEnergiaMaxima.pelearContra(majinBoo)(vegeta.planDeAtaqueContra(majinBoo, 6)(quedarConMasEnergia)) should be(Ganador(majinBoo.cambiarEnergiaA(1350)))
+    }
+  }
 }

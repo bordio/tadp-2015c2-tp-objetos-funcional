@@ -8,13 +8,13 @@ class AtaqueSpec extends FunSpec with ShouldMatchers {
   describe("Ataques fisico") {
     describe("MuchosGolpesNinjas") {
       it("Yajirobe le pega a androide18 pero se hace daño a si mismo") {
-        yajirobe.pegarCon(MuchosGolpesNinjas)(androide18)._1.energia should be(390)
+        yajirobe.pegarCon(MuchosGolpesNinja)(androide18)._1.energia should be(390)
       }
       it("Yajirobe le pega a androide16 que es más débil que él pero se hace daño a si mismo") {
-        yajirobe.pegarCon(MuchosGolpesNinjas)(androideDebil)._1.energia should be(390)
+        yajirobe.pegarCon(MuchosGolpesNinja)(androideDebil)._1.energia should be(390)
       }
       it("Yajirobe quiere pegarle a vegeta pero no logra más que hacerse daño a si mismo") {
-        yajirobe.pegarCon(MuchosGolpesNinjas)(vegeta)._1.energia should be(380)
+        yajirobe.pegarCon(MuchosGolpesNinja)(vegeta)._1.energia should be(380)
       }
     }
 

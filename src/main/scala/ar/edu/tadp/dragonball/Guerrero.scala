@@ -96,6 +96,21 @@ case class Guerrero(nombre: String,
     }
   }
 
+  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Option[Movimiento]]) = {
+    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
+      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
+        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
+          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual.get)(oponenteAnterior)
+          (atacanteProximo.estado, oponenteProximo.estado) match {
+            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
+            case (Muerto, _) => Ganador(oponenteProximo)
+            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
+          }
+        case otro => otro
+      }
+    }
+  }
+
 //  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
 //    val (atacante, defensor) = this.usar(movimiento)(oponente)
 //    defensor.contraAtacar(atacante).swap
@@ -116,20 +131,6 @@ case class Guerrero(nombre: String,
 //
 //  }
 //
-//  def pelearContra(oponente: Guerrero)(planDeAtaque: List[MovimientoDeprecated]) = {
-//    planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
-//      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
-//        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
-//          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
-//          (atacanteProximo.estado, oponenteProximo.estado) match {
-//            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
-//            case (Muerto, _) => Ganador(oponenteProximo)
-//            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
-//          }
-//        case otro => otro
-//      }
-//    }
-//  }
 }
 
 abstract class Estado
