@@ -5,7 +5,6 @@ import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 
 import ar.edu.tadp.dragonball.Utils._
-import scala.util.Try
 
 case class Guerrero(nombre: String,
                     items: List[Item],
@@ -84,7 +83,6 @@ case class Guerrero(nombre: String,
     defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia).get(defensor)(atacante).swap
   }
 
-
   def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Option[Movimiento]] = {
     def identidad(atacante: Guerrero)(oponente: Guerrero): Guerreros = (atacante, oponente)
     cantidadDeRounds match {
@@ -110,27 +108,6 @@ case class Guerrero(nombre: String,
       }
     }
   }
-
-//  def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
-//    val (atacante, defensor) = this.usar(movimiento)(oponente)
-//    defensor.contraAtacar(atacante).swap
-//  }
-//
-//  def contraAtacar(guerrero: Guerrero): Guerreros = this.atacarSegun(quedarConMasEnergia)(guerrero)
-//
-//  def atacarSegun(criterio: Guerreros=>Int): (Guerrero => Guerreros) = guerrero => {
-//    val guerreros = (this,guerrero)
-//    this.movimientoMasEfectivoContra(guerrero)(criterio).fold(guerreros)(_(guerreros))
-//  }
-
-//  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) : Try[List[Movimiento]] = Try {
-//    val (sinMovimientos, guerreros) = (List(): List[Movimiento], (this,oponente))
-//    (1 to cantidadDeRounds).foldLeft(sinMovimientos, guerreros)({
-//      case ((plan,(atacante,oponente)),_) => atacante.movimientoMasEfectivoContra(oponente)(unCriterio).fold(throw new Exception)(mov => (plan :+ mov, atacante.pelearUnRound(mov)(oponente)))
-//    })._1
-//
-//  }
-//
 }
 
 abstract class Estado
