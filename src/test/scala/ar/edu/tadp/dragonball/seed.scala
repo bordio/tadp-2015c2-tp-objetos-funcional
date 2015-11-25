@@ -5,7 +5,6 @@ import ar.edu.tadp.dragonball.TiposDeDigestion._
 
 package object seed {
   val Ataques: List[Movimiento] = List(DejarseFajar, CargarKi, MuchosGolpesNinja, Onda(150), Genkidama)
-  def tieneMasEnergia(guerreros: Guerreros) = guerreros._1.energia
   val AtaquesDeYajirobe: List[Movimiento] = List(MuchosGolpesNinja, UsarItem(ArmaFilosa), UsarItem(SemillaDelErmitanio))
   val hacertePensar: Function1[Guerreros,Guerreros] = { case (atacante,oponente) => (atacante, oponente.actualizarEnergia(2)) }
   val goku: Guerrero = Guerrero("goku", List(FotoDeLaLuna, EsferaDelDragon(4)), 100, 1000, Saiyajin(Normal,false), Luchando, Ataques)
