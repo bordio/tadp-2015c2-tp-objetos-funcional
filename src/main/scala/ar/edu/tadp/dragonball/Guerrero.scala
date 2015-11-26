@@ -68,30 +68,31 @@ case class Guerrero(nombre: String,
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
-    movimientos.maxByOptionable(mov => unCriterio(this.pegarCon(mov)(oponente)))
+    val results = movimientos.map(mov => Option(mov)).filter(mov => unCriterio(this.pegarCon(mov.get)(oponente)) > 0)
+    if (results.isEmpty) None else results.maxBy(mov => unCriterio(this.pegarCon(mov.get)(oponente)))
   }
 
   def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
+    def identidad(atacante: Guerrero)(oponente: Guerrero) = (atacante, oponente)
     val (atacante, defensor) = this.pegarCon(movimiento)(oponente)
-    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia).get(defensor)(atacante).swap
+    defensor.movimientoMasEfectivoContra(atacante)(quedarConMasEnergia).getOrElse(identidad (_))(defensor)(atacante).swap
   }
 
-  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Option[Movimiento]] = {
-    def identidad(atacante: Guerrero)(oponente: Guerrero): Guerreros = (atacante, oponente)
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(unCriterio: Criterio) :List[Movimiento] = {
     cantidadDeRounds match {
-      case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio))
+      case 1 => List(movimientoMasEfectivoContra(oponente)(unCriterio).getOrElse(throw new Exception("No es posible armar un plan")))
       case _ =>
-        val mov = movimientoMasEfectivoContra(oponente)(unCriterio)
-        val (atacanteActual, oponenteActual) = pelearUnRound(mov.getOrElse(identidad))(oponente)
+        val mov = movimientoMasEfectivoContra(oponente)(unCriterio).getOrElse(throw new Exception("No es posible armar un plan"))
+        val (atacanteActual, oponenteActual) = pelearUnRound(mov)(oponente)
         List(mov) ++ atacanteActual.planDeAtaqueContra(oponenteActual, cantidadDeRounds - 1)(unCriterio)
     }
   }
 
-  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Option[Movimiento]]) = {
+  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
     planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
       (resultadoAnterior, movimientoActual) => resultadoAnterior match {
         case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
-          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual.get)(oponenteAnterior)
+          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
           (atacanteProximo.estado, oponenteProximo.estado) match {
             case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
             case (Muerto, _) => Ganador(oponenteProximo)

@@ -7,7 +7,8 @@ package object Criterios {
 
   def quedarConMasEnergia(guerreros: Guerreros): Int = {
     if (guerreros._1.energia == guerreros._1.energiaMaxima) -1
-    else guerreros._1.energia - guerreros._2.energia
+    else Math.abs(guerreros._1.energia - guerreros._2.energia)
+    //para el androide deberia decir que no lo deje muerto, porque si no siempre elige explotar.
   }
 
   def quedarConMenosEnergia(guerreros: Guerreros): Int = guerreros._2.energia - guerreros._1.energia
