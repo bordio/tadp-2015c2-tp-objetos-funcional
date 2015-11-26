@@ -45,14 +45,14 @@ class RequerimientoSpec extends FunSpec with ShouldMatchers {
 //  }
 
   describe ("pelearContra") {
-    it ("Yajirobe le gana a Goku en 19 turnos") {
-      yajirobe.pelearContra(goku)(yajirobe.planDeAtaqueContra(goku, 19)(quedarConMasEnergia)) should be(Ganador(yajirobe.eliminarItem(SemillaDelErmitanio).cambiarEnergiaA(100)))
+    it ("Yamcha no le gana ni a Yajirobe") {
+      yamcha.pelearContra(yajirobe)(yamcha.planDeAtaqueContra(yajirobe, 3)(quedarConMenosEnergia)) should be(Ganador(yajirobe.cambiarEnergiaA(400)))
     }
     it ("Goku y Vegeta quedan peleando luego de 2 rounds") {
-      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia)) should be(SiguenPeleando(goku.cambiarEnergiaA(50),vegeta.cambiarEnergiaA(400)))
+      goku.pelearContra(vegeta)(goku.planDeAtaqueContra(vegeta, 2)(quedarConMasEnergia)) should be(SiguenPeleando(goku.cambiarEnergiaA(60),vegeta.cambiarEnergiaA(700)))
     }
-    it ("A pesar de que vegeta empieza atacando, majin boo lo extermina") {
-      vegeta.recuperarEnergiaMaxima.pelearContra(majinBoo)(vegeta.planDeAtaqueContra(majinBoo, 6)(quedarConMasEnergia)) should be(Ganador(majinBoo.cambiarEnergiaA(1350)))
+    it ("A pesar de que vegeta empieza atacando, majin boo lo extermina en 16 turnos") {
+      vegeta.recuperarEnergiaMaxima.pelearContra(majinBoo)(vegeta.planDeAtaqueContra(majinBoo, 16)(quedarConMasEnergia)) should be(Ganador(majinBoo.cambiarEnergiaA(2775)))
     }
   }
 }
