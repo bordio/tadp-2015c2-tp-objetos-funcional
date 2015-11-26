@@ -4,8 +4,6 @@ import ar.edu.tadp.dragonball.Criterios._
 import ar.edu.tadp.dragonball.Movimientos._
 import ar.edu.tadp.dragonball.TiposDeDigestion.TipoDigestion
 
-import ar.edu.tadp.dragonball.Utils._
-
 case class Guerrero(nombre: String,
                     items: List[Item],
                     energia: Int,
