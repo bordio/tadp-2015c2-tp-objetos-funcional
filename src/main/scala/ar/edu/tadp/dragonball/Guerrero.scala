@@ -66,8 +66,11 @@ case class Guerrero(nombre: String,
   }
 
   def movimientoMasEfectivoContra(oponente: Guerrero)(unCriterio: Criterio): Option[Movimiento] = {
-    val results = movimientos.map(mov => Option(mov)).filter(mov => unCriterio(this.pegarCon(mov.get)(oponente)) > 0)
-    if (results.isEmpty) None else results.maxBy(mov => unCriterio(this.pegarCon(mov.get)(oponente)))
+    movimientos.map(mov => (mov, unCriterio(this.pegarCon(mov)(oponente))))
+               .sortBy(movimientoConPuntaje => - movimientoConPuntaje._2)
+               .filter(movimientoConPuntaje => movimientoConPuntaje._2 > 0)
+               .map(movimientoConPuntaje => movimientoConPuntaje._1)
+               .headOption
   }
 
   def pelearUnRound(movimiento: Movimiento)(oponente: Guerrero): Guerreros = {
