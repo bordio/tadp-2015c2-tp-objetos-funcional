@@ -89,19 +89,9 @@ case class Guerrero(nombre: String,
     }
   }
 
-  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]) = {
+  def pelearContra(oponente: Guerrero)(planDeAtaque: List[Movimiento]): ResultadoPelea = {
     planDeAtaque.foldLeft(SiguenPeleando(this, oponente): ResultadoPelea) {
-      (resultadoAnterior, movimientoActual) => resultadoAnterior match {
-        case SiguenPeleando(atacanteAnterior, oponenteAnterior) =>
-          val (atacanteProximo: Guerrero, oponenteProximo: Guerrero) = atacanteAnterior.pelearUnRound(movimientoActual)(oponenteAnterior)
-          (atacanteProximo.estado, oponenteProximo.estado) match {
-            case (Muerto, Muerto) | (_, Muerto) => Ganador(atacanteProximo)
-            case (Muerto, _) => Ganador(oponenteProximo)
-            case _ => SiguenPeleando(atacanteProximo, oponenteProximo)
-          }
-        case otro => otro
-      }
-    }
+      (resultadoAnterior, movimiento) => resultadoAnterior.map(movimiento) }
   }
 }
 
@@ -112,6 +102,28 @@ case class Fajado(rounds: Int) extends Estado
 case object KO extends Estado
 case object Muerto extends Estado
 
-trait ResultadoPelea
-case class Ganador(ganador: Guerrero) extends ResultadoPelea
-case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea
+trait ResultadoPelea {
+  def map(f: (Guerrero) => (Guerrero) => (Guerrero, Guerrero)): ResultadoPelea
+  def flatMap(f:(Guerrero) => (Guerrero) => ResultadoPelea): ResultadoPelea
+  def fold(valorInicial: Guerrero)(f: (Guerrero) => (Guerrero) => Guerrero): Guerrero
+  def filter(f: (Guerrero) => Boolean): ResultadoPelea
+}
+case class Ganador(ganador: Guerrero) extends ResultadoPelea {
+  override def map(f: (Guerrero) => (Guerrero) => (Guerrero, Guerrero)): ResultadoPelea = this
+  override def flatMap(f: (Guerrero) => (Guerrero) => ResultadoPelea): ResultadoPelea = this
+  override def fold(t: Guerrero)(f: (Guerrero) => (Guerrero) => (Guerrero)): Guerrero = ganador
+  override def filter(f: (Guerrero) => Boolean): ResultadoPelea = this
+}
+case class SiguenPeleando(atacante: Guerrero, oponente: Guerrero) extends ResultadoPelea {
+  override def map(f: (Guerrero) => (Guerrero) => (Guerrero, Guerrero)): ResultadoPelea = {
+    val (guerrero1, guerrero2) = atacante.pelearUnRound(f)(oponente)
+    (guerrero1.estado, guerrero2.estado) match {
+      case (_ , Muerto) => Ganador(guerrero1)
+      case (Muerto, _) => Ganador(guerrero2)
+      case (_, _) => SiguenPeleando(guerrero1, guerrero2)
+    }
+  }
+  override def flatMap(f: (Guerrero) => (Guerrero) => ResultadoPelea): ResultadoPelea = f(atacante)(oponente)
+  override def filter(f: (Guerrero) => Boolean): ResultadoPelea = this
+  override def fold(t: Guerrero)(f: (Guerrero) => (Guerrero) => (Guerrero)): Guerrero = f(atacante)(oponente)
+}
