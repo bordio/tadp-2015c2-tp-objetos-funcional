@@ -2,9 +2,9 @@ package ar.edu.tadp.dragonball
 
 package object Movimientos {
   type Guerreros = (Guerrero, Guerrero)
-  type Movimiento = (Guerrero) => (Guerrero) => Guerreros
+  type Movimiento = (Guerrero, Guerrero) => Guerreros
 
-  def DejarseFajar(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def DejarseFajar(atacante: Guerrero, oponente: Guerrero): Guerreros = {
     atacante.estado match {
       case Luchando => (atacante cambiarEstadoA Fajado(1), oponente)
       case Fajado(rounds) => (atacante cambiarEstadoA Fajado(rounds + 1), oponente)
@@ -12,7 +12,7 @@ package object Movimientos {
     }
   }
 
-  def CargarKi(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def CargarKi(atacante: Guerrero, oponente: Guerrero): Guerreros = {
     atacante.especie match {
       case Saiyajin(SuperSaiyajin(nivel), _) => (atacante cambiarEstadoA Luchando actualizarEnergia (150 * nivel), oponente)
       case Androide => (atacante cambiarEstadoA Luchando, oponente)
@@ -20,7 +20,7 @@ package object Movimientos {
     }
   }
 
-  def MuchosGolpesNinja(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+  def MuchosGolpesNinja(ejecutante: Guerrero, defensor: Guerrero): Guerreros = {
     val (atacante, oponente) = (ejecutante cambiarEstadoA Luchando, defensor)
     (atacante.especie, oponente.especie) match {
       case (Humano, Androide) => (atacante actualizarEnergia -10, oponente)
@@ -28,7 +28,7 @@ package object Movimientos {
     }
   }
 
-  def Explotar(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+  def Explotar(ejecutante: Guerrero, defensor: Guerrero): Guerreros = {
     def _explotar(danio: Int, oponente: Guerrero): Guerrero = {
       val danioRecibido = oponente.energia - danio
       oponente.especie match {
@@ -45,7 +45,7 @@ package object Movimientos {
     }
   }
 
-  def Onda(energiaNecesaria: Int)(ejecutante: Guerrero)(defensor: Guerrero): Guerreros = {
+  def Onda(energiaNecesaria: Int)(ejecutante: Guerrero, defensor: Guerrero): Guerreros = {
     val (atacante, oponente) = (ejecutante cambiarEstadoA Luchando, defensor)
     if (atacante.energia < energiaNecesaria) (atacante, oponente)
     else oponente.especie match {
@@ -55,7 +55,7 @@ package object Movimientos {
     }
   }
 
-  def Genkidama(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def Genkidama(atacante: Guerrero, oponente: Guerrero): Guerreros = {
     def calcularDanio(estado: Estado): Int = {
       estado match {
         case Fajado(rounds) => -Math.pow(10, rounds).toInt
@@ -68,7 +68,7 @@ package object Movimientos {
     }
   }
 
-  def ComerseAlOponente(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def ComerseAlOponente(ejecutante: Guerrero, oponente: Guerrero): Guerreros = {
     val atacante = ejecutante cambiarEstadoA Luchando
     atacante.especie match {
       case Monstruo(tipoDigestion, guerrerosComidos) if oponente.energia < atacante.energia =>
@@ -77,7 +77,7 @@ package object Movimientos {
     }
   }
 
-  def ConvertirseEnMono(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def ConvertirseEnMono(ejecutante: Guerrero, oponente: Guerrero): Guerreros = {
     val atacante = ejecutante cambiarEstadoA Luchando
     atacante.especie match {
       case Saiyajin(MonoGigante, _) => (atacante, oponente)
@@ -91,7 +91,7 @@ package object Movimientos {
     }
   }
 
-  def ConvertirseEnSuperSaiyajin(ejecutante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def ConvertirseEnSuperSaiyajin(ejecutante: Guerrero, oponente: Guerrero): Guerreros = {
     def puedeSubirDeNivel(guerrero:Guerrero) = guerrero.energia >= guerrero.energiaMaxima / 2
     val atacante = ejecutante cambiarEstadoA Luchando
     atacante.especie match {
@@ -105,7 +105,7 @@ package object Movimientos {
     }
   }
 
-  def Fusionarse(amigo: Guerrero)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def Fusionarse(amigo: Guerrero)(atacante: Guerrero, oponente: Guerrero): Guerreros = {
     (atacante.especie, amigo.especie) match {
       case (_:Fusionable, _:Fusionable) =>
         val nuevoGuerrero: Guerrero =
@@ -119,7 +119,7 @@ package object Movimientos {
     }
   }
 
-  def Magia(paseDeMagia: Guerreros => Guerreros)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def Magia(paseDeMagia: Guerreros => Guerreros)(atacante: Guerrero, oponente: Guerrero): Guerreros = {
     val las7Esferas: List[Item] = List(EsferaDelDragon(1),EsferaDelDragon(2),EsferaDelDragon(3),EsferaDelDragon(4),EsferaDelDragon(5),EsferaDelDragon(6),EsferaDelDragon(7))
     atacante.especie match {
       case _:Magico => paseDeMagia(atacante, oponente)
@@ -128,7 +128,7 @@ package object Movimientos {
     }
   }
 
-  def UsarItem(item: Item)(atacante: Guerrero)(oponente: Guerrero): Guerreros = {
+  def UsarItem(item: Item)(atacante: Guerrero, oponente: Guerrero): Guerreros = {
     def quedarKOSiEnergiaMenorA300(guerrero: Guerrero) = if (guerrero.energia < 300) guerrero.cambiarEstadoA(KO) else guerrero
     (item, oponente.especie, oponente.estado) match {
       case (ArmaRoma, Androide, _) => (atacante, oponente)
